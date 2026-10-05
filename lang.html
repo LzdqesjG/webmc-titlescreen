@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Language</title>
+
+<link rel="preload" as="image" href="assets/background/panorama_equirect.png">
+<link rel="preload" as="image" href="assets/background/panorama_0.png">
+<link rel="preload" as="image" href="assets/background/panorama_1.png">
+<link rel="preload" as="image" href="assets/background/panorama_2.png">
+<link rel="preload" as="image" href="assets/background/panorama_3.png">
+<link rel="preload" as="image" href="assets/background/panorama_4.png">
+<link rel="preload" as="image" href="assets/background/panorama_5.png">
+<link rel="preload" as="image" href="assets/background/menu_list_background.png">
+<link rel="preload" as="audio" href="assets/sound/click.ogg">
+
+<link rel="stylesheet" href="css/main.css">
+<link rel="stylesheet" href="css/pano.css">
+<link rel="stylesheet" href="css/buttons.css">
+<link rel="stylesheet" href="css/textfield.css">
+<link rel="stylesheet" href="css/slider.css">
+<style>
+  html, body {
+    margin: 0; padding: 0;
+    width: 100%; height: 100%;
+    overflow: hidden;
+  }
+
+  body {
+    color: #fff;
+    font-family: 'Minecraft', monospace;
+    -webkit-font-smoothing: none;
+    font-smooth: never;
+    position: relative;
+  }
+
+  .lang-screen {
+    position: fixed;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%) scale(var(--ui-scale, 1));
+    transform-origin: top center;
+    width:  calc(100vw / var(--ui-scale, 1));
+    height: calc(100vh / var(--ui-scale, 1));
+    display: flex;
+    flex-direction: column;
+    z-index: 1;
+    overflow: visible;
+  }
+
+  /* Header: 12 + 9 + 15 = 36 */
+  .lang-header {
+    flex: 0 0 36px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    box-sizing: border-box;
+  }
+
+  .lang-title {
+    font-family: 'Minecraft', monospace;
+    font-size: 20px;
+    line-height: 1;
+    color: #ffffff;
+    text-shadow: 1px 1px 0 #3f3f3f;
+    white-space: nowrap;
+    user-select: none;
+  }
+
+  .lang-search-wrap { display: flex; justify-content: center; }
+  .lang-search-wrap .mc-input { width: 200px; height: 15px; }
+
+  /* Content */
+  .lang-content {
+    flex: 1 1 auto;
+    overflow-y: auto;
+    overflow-x: hidden;
+    background-image: url('assets/background/menu_list_background.png');
+    background-repeat: repeat;
+    background-size: 32px 32px;
+    image-rendering: pixelated;
+  }
+
+ 
+
+  .lang-list { display: flex; flex-direction: column; }
+
+  /* Entry 高 18，居中显示语言名 */
+  .lang-entry {
+    height: 18px;
+    padding: 0 4px;
+    box-sizing: border-box;
+    cursor: pointer;
+    user-select: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Minecraft', monospace;
+    font-size: 16px;
+    line-height: 1;
+    color: #ffffff;
+    text-shadow: 1px 1px 0 #3f3f3f;
+    white-space: nowrap;
+  }
+
+  .lang-entry:hover {
+    background: rgba(255, 255, 255, 0.08);
+  }
+
+  .lang-entry.selected {
+    background: rgba(255, 255, 255, 0.16);
+    box-shadow: inset 0 0 0 1px #ffffff;
+  }
+
+  /* Footer: 53px */
+  .lang-footer {
+    flex: 0 0 53px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    box-sizing: border-box;
+  }
+
+  .lang-warning {
+    font-family: 'Minecraft', monospace;
+    font-size: 16px;
+    line-height: 1;
+    color: #babbbe;
+    text-shadow: 1px 1px 0 #1a1a1a;
+    text-align: center;
+    white-space: nowrap;
+    user-select: none;
+  }
+
+  .lang-bottom-buttons {
+    display: flex;
+    gap: 8px;
+  }
+
+  #pano-cover { background: rgba(0, 0, 0, 0.35); }
+</style>
+
+<script src="js/exit.js"></script>
+</head>
+<body>
+
+<audio id="sfx-click" src="assets/sound/click.ogg" preload="auto"></audio>
+<script src="js/clicksound.js"></script>
+
+<canvas id="pano-canvas"></canvas>
+<div id="pano-css"></div>
+<div id="pano-cover"></div>
+
+<div class="lang-screen">
+
+  <div class="lang-header">
+    <div class="lang-title" data-i18n="options.language.title">Language</div>
+    <div class="lang-search-wrap">
+      <input class="mc-input" id="lang-search" type="text"
+             data-i18n-placeholder="options.language.search" placeholder="Search...">
+    </div>
+  </div>
+
+<div class="lang-content mc-scroll">
+  <div class="lang-list" id="lang-list"></div>
+</div>
+
+  <div class="lang-footer">
+    <div class="lang-warning" data-i18n="options.language.warning">Note: Some languages are not fully translated</div>
+    <div class="lang-bottom-buttons">
+      <button class="mcbtn mcbtn-150" id="btn-font" data-i18n="options.font">Font...</button>
+      <button class="mcbtn mcbtn-150" id="btn-done" data-i18n="gui.done">Done</button>
+    </div>
+  </div>
+
+</div>
+
+<script src="js/show_background.js"></script>
+<script src="js/uiscale.js"></script>
+<script src="js/i18n.js"></script>
+
+<script>
+(function() {
+  'use strict';
+
+  /* ==========================================================
+     可用语言列表（要加语言时在这里追加）
+     ========================================================== */
+  var LANGUAGES = [
+    { code: 'en_us', name: 'English (US)',  region: 'United States' },
+    { code: 'zh_cn', name: '简体中文',       region: '中国' },
+  ];
+
+  var listEl    = document.getElementById('lang-list');
+  var searchBox = document.getElementById('lang-search');
+  var btnDone   = document.getElementById('btn-done');
+  var btnFont   = document.getElementById('btn-font');
+
+  var currentLang = (window.i18n && window.i18n.getLang) ? window.i18n.getLang() : 'en_us';
+  var selected = null;
+
+  /* ==========================================================
+     渲染列表
+     ========================================================== */
+  function render(filter) {
+    filter = (filter || '').trim().toLowerCase();
+    listEl.innerHTML = '';
+    selected = null;
+
+    for (var i = 0; i < LANGUAGES.length; i++) {
+      var lang = LANGUAGES[i];
+      var hay = (lang.name + ' ' + lang.region + ' ' + lang.code).toLowerCase();
+      if (filter && hay.indexOf(filter) < 0) continue;
+
+      var el = document.createElement('div');
+      el.className = 'lang-entry';
+      el.textContent = lang.name + ' (' + lang.code + ')';
+      el.dataset.code = lang.code;
+
+      if (lang.code === currentLang) {
+        el.classList.add('selected');
+        selected = el;
+      }
+
+      el.addEventListener('click', function() {
+        selectEntry(this);
+      });
+
+      el.addEventListener('dblclick', function() {
+        selectEntry(this);
+        applySelection();
+      });
+
+      listEl.appendChild(el);
+    }
+  }
+
+  function selectEntry(el) {
+    var all = listEl.querySelectorAll('.lang-entry');
+    for (var i = 0; i < all.length; i++) {
+      all[i].classList.remove('selected');
+    }
+    el.classList.add('selected');
+    selected = el;
+  }
+
+  /* ==========================================================
+     应用选中的语言并返回上一页
+     ========================================================== */
+  function applySelection() {
+    if (selected && window.i18n && window.i18n.setLang) {
+      window.i18n.setLang(selected.dataset.code);
+    }
+    location.href = 'index.html';
+  }
+
+  /* ==========================================================
+     交互
+     ========================================================== */
+  searchBox.addEventListener('input', function() {
+    render(searchBox.value);
+  });
+
+  btnDone.addEventListener('click', function() {
+    applySelection();
+  });
+
+  btnFont.addEventListener('click', function() {
+    console.log('[lang] Font options (not implemented)');
+  });
+
+  /* ==========================================================
+     启动
+     ========================================================== */
+  render('');
+
+  /* i18n 加载完后刷新文本（如果晚于本脚本） */
+  if (window.i18n && window.i18n.ready) {
+    window.i18n.ready(function() {
+      /* 标题、搜索框 hint、按钮文本已通过 data-i18n 更新 */
+    });
+  }
+})();
+</script>
+<script src="js/slider.js"></script>
+</body>
+</html>

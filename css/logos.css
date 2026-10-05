@@ -1,0 +1,64 @@
+/* ============ Logo ============ */
+.logo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 26px;
+}
+
+.logo-minecraft {
+  width: 256px;
+  height: 44px;
+  object-fit: cover;
+  object-position: top;
+  image-rendering: pixelated;
+  display: block;
+}
+
+.logo-edition {
+  width: 128px;
+  height: 16px;
+  image-rendering: pixelated;
+  display: block;
+}
+
+/* ============ 闪烁标语（固定在视口，不受 .screen 影响） ============ */
+.splash {
+  position: fixed;
+  left: 50%;
+  top: 25%;
+  margin-top: calc(9px * var(--ui-scale, 1));   /* ← 从 60px 改成 9px */
+  margin-left: 123px;
+
+  transform: translate(-50%, -50%) scale(var(--ui-scale, 1));
+  transform-origin: center center;
+
+  pointer-events: none;
+  z-index: 100;
+  display: none;
+}
+
+.splash.visible {
+  display: block;
+}
+
+/* 内层：旋转 + 脉动，外层不用管 */
+.splash-text {
+  display: inline-block;
+  font-family: 'Minecraft', monospace;
+  font-size: 16px;
+  color: #ffff00;
+  text-shadow: 1px 1px 0 #3f3f3f;
+  white-space: nowrap;
+  user-select: none;
+  transform-origin: center center;
+  animation: splashBob 2s linear infinite;
+}
+
+@keyframes splashBob {
+  0%   { transform: rotate(-20deg) scale(1.029); }
+  25%  { transform: rotate(-20deg) scale(0.971); }
+  50%  { transform: rotate(-20deg) scale(1.029); }
+  75%  { transform: rotate(-20deg) scale(0.971); }
+  100% { transform: rotate(-20deg) scale(1.029); }
+}
