@@ -24,7 +24,9 @@ html, body {
   appearance: none;
   outline: none;
 }
-
+*{
+  font-size: 16px;
+}
 body {
   color: #fff;
   font-family: 'Minecraft', monospace;
@@ -33,39 +35,3 @@ body {
   position: relative;
 }
 
-.version-text {
-  position: absolute;
-  left: calc(2px * var(--ui-scale, 1));
-  bottom: 0;
-  height: 10px;
-  line-height: 10px;
-  font-family: 'Minecraft', monospace;
-  font-size: 10px;
-  color: #fff;
-  text-shadow: 1px 1px 0 #3f3f3f;
-  pointer-events: none;
-  white-space: nowrap;
-
-  transform-origin: left bottom;
-  transform: scale(var(--ui-scale, 1));
-  will-change: transform;
-}
-
-.copyright-text {
-  position: absolute;
-  right: calc(2px * var(--ui-scale, 1));
-  bottom: 0;
-  height: 10px;
-  line-height: 10px;
-  font-family: 'Minecraft', monospace;
-  font-size: 10px;
-  color: #fff;
-  text-shadow: 1px 1px 0 #3f3f3f;
-  cursor: pointer;
-  white-space: nowrap;
-  background: none; border: none; padding: 0;
-
-  transform-origin: right bottom;
-  transform: scale(var(--ui-scale, 1));
-  will-change: transform;
-}
