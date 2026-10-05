@@ -24,8 +24,8 @@ website/
 
 - `mstart.html` 以 `sstart.html` 为模板改写：结构、条目渲染、选中与搜索逻辑完全复用，仅替换文案与底部按钮
   （Join Server / Direct Connect / Add Server / Edit / Delete / Refresh / Back）。
-- 服务器列表**下方居中**有局域网扫描提示：三点逐一亮起的逐帧动画（`Ooo → oOo → ooO → oOo`，每 0.4s 一格），
-  其下为扫描文案（`multiplayer.scanning`）。
+- 服务器列表**下方居中**有局域网扫描提示（橙色、可选中文本）：三点逐一亮起的逐帧动画
+  （`Ooo → oOo → ooO → oOo`，每 0.4s 一格），其下为扫描文案（`multiplayer.scanning`）。
 - 服务器列表首条固定为 **「开发者模式 (实验性)」**，MOTD **「存在bug并不被动修复」**，带 `warning` 警示图标；
   点击条目 / 箭头 / 警示图标都会进入 `devmenu.html`。
 - `devmenu.html` 是测试用导航页：上半区可打开项目内**每个**界面（标题屏 / 选择世界 / 多人游戏 / Realms / 语言设置），
@@ -41,8 +41,8 @@ Realms 按场景拆为三页：
 - `realms_online.html`（在线）：标题屏的 **Minecraft Realms** 按钮进入此页（原先为 `disabled` 占位）。
   以 `mstart.html` 为模板：Realm 列表 + 选中 / 搜索逻辑完全复用；
   底部为 Configure Realm / Leave Realm（选中才可用）、Buy a Realm / Back。
-- `realms_offline.html`（离线 / 盗版玩家）：无 Microsoft 账号、Realms 加载失败的界面；
-  红色标题「Failed to load Realms」，提供 Retry（重新加载本页）与 Back。
+- `realms_offline.html`（离线 / 盗版玩家）：无 Microsoft 账号、会话失效的界面；
+  红色标题「Invalid session!」+「请尝试重启 Minecraft」，提供 Retry（重新加载本页）与 Back。
 - `realms_update.html`（客户端版本过低）：黄色标题「Outdated client!」，提示使用最新版本；仅提供 Back。
 - 标题屏通知图标系统（`css/realm.css` + `js/show_realm.js`）保持原样：按 cookie 决定 news / invite / trial 的显隐。
 - Realms 需在线账号与官方服务，纯静态站点无法真正联机：示例条目与按钮动作为 console 占位。

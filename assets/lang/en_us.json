@@ -38,8 +38,8 @@
   "realms.back": "Back",
   "realms.empty": "You don't have any Realms yet",
 
-  "realms.offline.error": "Failed to load Realms",
-  "realms.offline.detail": "You are not logged in to a Microsoft account.",
+  "realms.offline.error": "Invalid session!",
+  "realms.offline.detail": "Please try restarting Minecraft.",
   "realms.update.error": "Outdated client!",
   "realms.update.detail": "Please use the latest version of Minecraft to access Realms.",
   "realms.retry": "Retry",
