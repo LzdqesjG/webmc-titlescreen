@@ -19,7 +19,6 @@
 <link rel="stylesheet" href="css/main.css">
 <link rel="stylesheet" href="css/pano.css">
 <link rel="stylesheet" href="css/buttons.css">
-<link rel="stylesheet" href="css/textfield.css">
 <link rel="stylesheet" href="css/slider.css">
 <style>
   html, body {
@@ -50,14 +49,12 @@
     overflow: visible;
   }
 
-  /* ============ Header ============ */
+  /* ============ Header（原版多人页标题栏无搜索框） ============ */
   .world-header {
     flex: 0 0 49px;
     display: flex;
-    flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 4px;
     box-sizing: border-box;
   }
 
@@ -71,9 +68,6 @@
     user-select: none;
   }
 
-  .world-search-wrap { display: flex; justify-content: center; }
-  .world-search-wrap .mc-input { width: 200px; height: 20px; }
-
   /* ============ Content ============ */
   .world-content {
     flex: 1 1 auto;
@@ -85,35 +79,40 @@
     image-rendering: pixelated;
   }
 
-  /* 局域网扫描提示（多人页专有，位于服务器列表下方居中，橙色可选中） */
+  /* ============ 局域网扫描（复刻 LoadingDotsWidget） ============
+     白 message 居中 + 灰 dots 位于底部，帧 O o o / o O o / o o O / o O o
+     每 300ms 切换，可选中文本（#3） */
   .world-scan {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 10px 8px 8px;
+    padding: 10px 8px 9px;
     font-family: 'Minecraft', monospace;
     line-height: 1;
-    color: #ffaa00;
-    text-shadow: 1px 1px 0 #1a1a1a;
     user-select: text;
     -webkit-user-select: text;
     cursor: text;
   }
 
-  /* 逐帧动画：Ooo → oOo → ooO → oOo（每 0.4s 一格） */
+  .world-scan-text {
+    font-size: 16px;
+    text-align: center;
+    color: #ffffff;
+    text-shadow: 1px 1px 0 #1a1a1a;
+    user-select: text;
+    -webkit-user-select: text;
+  }
+
   .world-scan-anim {
+    margin-top: 6px;
     font-size: 16px;
     letter-spacing: 1px;
     white-space: pre;
-    color: #ffaa00;
-  }
-
-  .world-scan-text {
-    margin-top: 6px;
-    font-size: 16px;
-    text-align: center;
-    color: #ffaa00;
+    color: #808080;
+    text-shadow: 1px 1px 0 #1a1a1a;
+    user-select: text;
+    -webkit-user-select: text;
   }
 
   .world-list { display: flex; flex-direction: column; }
@@ -156,78 +155,6 @@
     image-rendering: pixelated;
   }
 
-  /* ============ 状态叠加 ============ */
-  .world-status {
-    position: absolute;
-    inset: 0;
-  }
-
-  .world-join {
-    position: absolute;
-    inset: 0;
-    background-repeat: no-repeat;
-    background-position: center;
-    background-size: 100% 100%;
-    image-rendering: pixelated;
-    display: none;
-    cursor: pointer;
-    z-index: 1;
-  }
-
-  .world-alert {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 16px;
-    height: 16px;
-    background-repeat: no-repeat;
-    background-position: center;
-    background-size: 100% 100%;
-    image-rendering: pixelated;
-    display: none;
-    cursor: pointer;
-    z-index: 2;
-  }
-
-  .world-alert[data-alert="warning"] {
-    display: block;
-    background-image: url('assets/icon/world_selection/warning.png');
-  }
-  .world-alert[data-alert="error"] {
-    display: block;
-    background-image: url('assets/icon/world_selection/error.png');
-  }
-
-  .world-alert[data-alert="warning"]:hover {
-    background-image: url('assets/icon/world_selection/warning_highlighted.png');
-  }
-  .world-alert[data-alert="error"]:hover {
-    background-image: url('assets/icon/world_selection/error_highlighted.png');
-  }
-
-  /* ============ 箭头显示 / 高亮 ============ */
-
-  .world-entry:hover .world-join,
-  .world-entry.selected .world-join {
-    display: block;
-  }
-
-  .world-entry:hover .world-join[data-join="join"],
-  .world-entry.selected .world-join[data-join="join"] {
-    background-image: url('assets/icon/world_selection/join.png');
-  }
-  .world-entry:hover .world-join[data-join="marked_join"],
-  .world-entry.selected .world-join[data-join="marked_join"] {
-    background-image: url('assets/icon/world_selection/marked_join.png');
-  }
-
-  .world-entry .world-join[data-join="join"]:hover {
-    background-image: url('assets/icon/world_selection/join_highlighted.png');
-  }
-  .world-entry .world-join[data-join="marked_join"]:hover {
-    background-image: url('assets/icon/world_selection/marked_join_highlighted.png');
-  }
-
   /* ============ 文字区 ============ */
   .world-info {
     flex: 1 1 auto;
@@ -260,6 +187,35 @@
     text-overflow: ellipsis;
   }
 
+  /* ============ 右列：玩家数 + 信号图标 10×8 ============ */
+  .world-right {
+    flex: 0 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    justify-content: center;
+    gap: 4px;
+    padding-left: 4px;
+  }
+
+  .world-count {
+    font-family: 'Minecraft', monospace;
+    font-size: 16px;
+    line-height: 1;
+    color: #808080;
+    text-shadow: 1px 1px 0 #1a1a1a;
+    white-space: nowrap;
+  }
+
+  .world-ping {
+    width: 10px;
+    height: 8px;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 100% 100%;
+    image-rendering: pixelated;
+  }
+
   /* ============ Footer ============ */
   .world-footer {
     flex: 0 0 60px;
@@ -272,6 +228,59 @@
   }
 
   .footer-row {
+    display: flex;
+    gap: 4px;
+    justify-content: center;
+  }
+
+  /* ============ SafetyScreen（Security Warning，等价 multiplayerWarning） ============ */
+  .safety-screen {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    box-sizing: border-box;
+    padding: 12px;
+    background: rgba(32, 32, 32, 0.94);
+    font-family: 'Minecraft', monospace;
+    color: #ffffff;
+  }
+  .safety-screen.visible { display: flex; }
+
+  .safety-title {
+    flex: 0 0 auto;
+    margin: 8px 0 12px;
+    font-size: 20px;
+    font-weight: bold;
+    line-height: 1.2;
+    text-align: center;
+    text-shadow: 1px 1px 0 #3f3f3f;
+  }
+
+  .safety-message {
+    flex: 1 1 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: calc(100% - 100px);
+    text-align: center;
+    font-size: 16px;
+    line-height: 1.4;
+    text-shadow: 1px 1px 0 #1a1a1a;
+    white-space: pre-wrap;
+  }
+
+  .safety-check-row {
+    flex: 0 0 auto;
+    margin-bottom: 12px;
+    color: #e0e0e0; /* -2039584 */
+  }
+  .safety-check-row span { color: #e0e0e0; }
+
+  .safety-buttons {
+    flex: 0 0 auto;
     display: flex;
     gap: 8px;
     justify-content: center;
@@ -295,34 +304,44 @@
 
   <div class="world-header">
     <div class="world-title" data-i18n="multiplayer.title">Play Multiplayer</div>
-    <div class="world-search-wrap">
-      <input class="mc-input" id="server-search" type="text"
-             data-i18n-placeholder="multiplayer.search" placeholder="Search...">
-    </div>
   </div>
 
   <div class="world-content mc-scroll">
     <div class="world-list" id="server-list"></div>
     <div class="world-scan" id="server-scan">
-      <div class="world-scan-anim" id="server-scan-anim">Ooo</div>
-      <div class="world-scan-text" data-i18n="multiplayer.scanning">Scanning for games on your local network</div>
+      <div class="world-scan-text" data-i18n="lanServer.scanning">Scanning for games on your local network</div>
+      <div class="world-scan-anim" id="server-scan-anim">O o o</div>
     </div>
   </div>
 
   <div class="world-footer">
     <div class="footer-row">
-      <button class="mcbtn mcbtn-150" id="btn-join"     disabled data-i18n="multiplayer.join">Join Server</button>
-      <button class="mcbtn mcbtn-150" id="btn-direct"            data-i18n="multiplayer.direct">Direct Connect</button>
+      <button class="mcbtn mcbtn-100" id="btn-select"  disabled data-i18n="selectServer.select">Join Server</button>
+      <button class="mcbtn mcbtn-100" id="btn-direct"          data-i18n="selectServer.direct">Direct Connection</button>
+      <button class="mcbtn mcbtn-100" id="btn-add"             data-i18n="selectServer.add">Add Server</button>
     </div>
     <div class="footer-row">
-      <button class="mcbtn mcbtn-71" id="btn-add"              data-i18n="multiplayer.add">Add Server</button>
-      <button class="mcbtn mcbtn-71" id="btn-edit"     disabled data-i18n="multiplayer.edit">Edit</button>
-      <button class="mcbtn mcbtn-71" id="btn-delete"   disabled data-i18n="multiplayer.delete">Delete</button>
-      <button class="mcbtn mcbtn-71" id="btn-refresh"           data-i18n="multiplayer.refresh">Refresh</button>
-      <a class="mcbtn mcbtn-71" id="btn-back" href="index.html" data-i18n="multiplayer.back">Back</a>
+      <button class="mcbtn mcbtn-74" id="btn-edit"     disabled data-i18n="selectServer.edit">Edit</button>
+      <button class="mcbtn mcbtn-74" id="btn-delete"   disabled data-i18n="selectServer.delete">Delete</button>
+      <button class="mcbtn mcbtn-74" id="btn-refresh"           data-i18n="selectServer.refresh">Refresh</button>
+      <a class="mcbtn mcbtn-74" id="btn-back" href="index.html" data-i18n="gui.back">Back</a>
     </div>
   </div>
 
+</div>
+
+<!-- ============ Security Warning（SafetyScreen） ============ -->
+<div class="safety-screen" id="safety-screen">
+  <div class="safety-title" data-i18n="multiplayerWarning.header">Caution: Third-Party Online Play</div>
+  <div class="safety-message" data-i18n="multiplayerWarning.message">Caution: Online play is offered by third-party servers that are not owned, operated, or supervised by Mojang Studios or Microsoft.</div>
+  <div class="mc-checkbox-row safety-check-row" id="safety-check-row">
+    <button class="mc-checkbox" id="safety-check" data-checked="false" type="button"></button>
+    <span data-i18n="multiplayerWarning.check">Do not show this screen again</span>
+  </div>
+  <div class="safety-buttons">
+    <button class="mcbtn mcbtn-150" id="btn-safety-proceed" data-i18n="gui.proceed">Proceed</button>
+    <button class="mcbtn mcbtn-150" id="btn-safety-back"    data-i18n="gui.back">Back</button>
+  </div>
 </div>
 
 <script src="js/show_background.js"></script>
@@ -334,45 +353,169 @@
   'use strict';
 
   var DEFAULT_ICON = 'assets/icon/world_selection/unknown_server.png';
+  var SAFETY_KEY   = 'skipMultiplayerWarning';
+  var PING_DIR     = 'assets/icon/server_list/';
 
   /* ==========================================================
      服务器列表
+     state: 'online'（稳定 ping）/ 'pinging'（扫描中动画）
      ========================================================== */
   var SERVERS = [
     {
       icon: DEFAULT_ICON,
       name: '开发者模式 (实验性)',
       description: '存在bug并不被动修复',
-      join: 'join',
-      alert: 'warning',
-      onJoin: function() { location.href = 'devmenu.html'; },
-      onAlertClick: function() { location.href = 'devmenu.html'; }
+      ping: 46,
+      players: [3, 20],
+      state: 'online',
+      onJoin: function() { location.href = 'devmenu.html'; }
     },
     {
       icon: DEFAULT_ICON,
       name: 'Example Server',
       description: 'A sample multiplayer server',
-      join: 'join',
+      ping: 88,
+      players: [7, 20],
+      state: 'online',
       onJoin: function() { console.log('[multiplayer] join Example Server'); }
     },
     {
       icon: DEFAULT_ICON,
       name: 'Local Test Server',
-      description: '127.0.0.1:25565 · Offline',
-      join: 'join',
-      alert: 'error',
+      description: '127.0.0.1:25565',
+      ping: 320,
+      players: [1, 8],
+      state: 'online',
       onJoin: function() { console.log('[multiplayer] join Local Test Server'); }
+    },
+    {
+      icon: DEFAULT_ICON,
+      name: 'LAN World',
+      description: '',
+      ping: 0,
+      players: [0, 0],
+      state: 'pinging',
+      onJoin: function() {}
     }
   ];
 
-  var listEl    = document.getElementById('server-list');
-  var searchBox = document.getElementById('server-search');
-  var btnJoin   = document.getElementById('btn-join');
-  var btnEdit   = document.getElementById('btn-edit');
-  var btnDelete = document.getElementById('btn-delete');
-  var btnRefresh= document.getElementById('btn-refresh');
-  var btnAdd    = document.getElementById('btn-add');
-  var btnDirect = document.getElementById('btn-direct');
+  var listEl     = document.getElementById('server-list');
+  var btnSelect  = document.getElementById('btn-select');
+  var btnEdit    = document.getElementById('btn-edit');
+  var btnDelete  = document.getElementById('btn-delete');
+  var btnRefresh = document.getElementById('btn-refresh');
+  var btnAdd     = document.getElementById('btn-add');
+  var btnDirect  = document.getElementById('btn-direct');
+
+  var selected = null;
+
+  /* ==========================================================
+     贴图映射（权威：ServerSelectionList$OnlineServerEntry）
+     ========================================================== */
+  function pingSprite(ping) {
+    if (ping < 150)  return PING_DIR + 'ping_5.png';
+    if (ping < 300)  return PING_DIR + 'ping_4.png';
+    if (ping < 600)  return PING_DIR + 'ping_3.png';
+    if (ping < 1000) return PING_DIR + 'ping_2.png';
+    return PING_DIR + 'ping_1.png';
+  }
+
+  /* k = (millis/100 + entryIndex*2) & 7；k>4 时取 8-k；1..4 → pinging_2..5，否则 pinging_1 */
+  function pingingSprite(entryIndex, millis) {
+    var k = (((millis / 100) | 0) + entryIndex * 2) & 7;
+    if (k > 4) k = 8 - k;
+    switch (k) {
+      case 1: return PING_DIR + 'pinging_2.png';
+      case 2: return PING_DIR + 'pinging_3.png';
+      case 3: return PING_DIR + 'pinging_4.png';
+      case 4: return PING_DIR + 'pinging_5.png';
+      default: return PING_DIR + 'pinging_1.png';
+    }
+  }
+
+  function playerCountText(s) {
+    var tpl = (window.i18n && i18n.t) ? i18n.t('multiplayer.status.player_count') : '%s/%s';
+    return String(tpl).replace('%s', s.players[0]).replace('%s', s.players[1]);
+  }
+
+  /* ==========================================================
+     生成服务器条目
+     ========================================================== */
+  function createEntry(server, index) {
+    var el = document.createElement('div');
+    el.className = 'world-entry';
+
+    /* 图标 */
+    var iconWrap = document.createElement('div');
+    iconWrap.className = 'world-icon-wrap';
+    var iconEl = document.createElement('div');
+    iconEl.className = 'world-icon';
+    iconEl.style.backgroundImage = 'url("' + String(server.icon || DEFAULT_ICON).replace(/"/g, '\\"') + '")';
+    iconWrap.appendChild(iconEl);
+
+    /* 文字 */
+    var infoEl = document.createElement('div');
+    infoEl.className = 'world-info';
+    var nameEl = document.createElement('div');
+    nameEl.className = 'world-name';
+    nameEl.textContent = server.name || '';
+    var descEl = document.createElement('div');
+    descEl.className = 'world-meta';
+    descEl.textContent = server.description || '';
+    infoEl.appendChild(nameEl);
+    infoEl.appendChild(descEl);
+
+    /* 右列：玩家数 + 信号 */
+    var rightEl = document.createElement('div');
+    rightEl.className = 'world-right';
+
+    var countEl = document.createElement('div');
+    countEl.className = 'world-count';
+    countEl.textContent = (server.state === 'online') ? playerCountText(server) : '';
+
+    var pingEl = document.createElement('div');
+    pingEl.className = 'world-ping';
+    if (server.state === 'online') {
+      pingEl.style.backgroundImage = 'url("' + pingSprite(server.ping) + '")';
+    } else {
+      pingEl.style.backgroundImage = 'url("' + pingingSprite(index, Date.now()) + '")';
+    }
+
+    rightEl.appendChild(countEl);
+    rightEl.appendChild(pingEl);
+
+    el.appendChild(iconWrap);
+    el.appendChild(infoEl);
+    el.appendChild(rightEl);
+
+    /* 单击选中 */
+    el.addEventListener('click', function() { setSelected(server); });
+
+    /* 双击进入 */
+    el.addEventListener('dblclick', function() {
+      setSelected(server);
+      callHandle(server, 'onJoin');
+    });
+
+    server._el      = el;
+    server._pingEl  = pingEl;
+    server._countEl = countEl;
+    return el;
+  }
+
+  function renderList() {
+    listEl.innerHTML = '';
+    for (var i = 0; i < SERVERS.length; i++) {
+      listEl.appendChild(createEntry(SERVERS[i], i));
+    }
+    /* 重建后恢复选中态 */
+    if (selected) {
+      for (var j = 0; j < SERVERS.length; j++) {
+        if (SERVERS[j] === selected && selected._el) selected._el.classList.add('selected');
+      }
+    }
+    updateButtonState();
+  }
 
   function callHandle(server, name) {
     if (!server) return;
@@ -380,122 +523,11 @@
     if (typeof fn === 'function') fn.call(server);
   }
 
-  function getJoinHighlighted(server) {
-    return (server.join === 'marked_join')
-      ? 'assets/icon/world_selection/marked_join_highlighted.png'
-      : 'assets/icon/world_selection/join_highlighted.png';
-  }
-
-  /* ==========================================================
-     生成服务器条目
-     ========================================================== */
-  function createEntry(server) {
-    var el = document.createElement('div');
-    el.className = 'world-entry';
-
-    /* 图标 */
-    var iconWrap = document.createElement('div');
-    iconWrap.className = 'world-icon-wrap';
-
-    var iconEl = document.createElement('div');
-    iconEl.className = 'world-icon';
-    iconEl.style.backgroundImage =
-      'url("' + String(server.icon || DEFAULT_ICON).replace(/"/g, '\\"') + '")';
-    iconWrap.appendChild(iconEl);
-
-    /* 状态容器 */
-    var statusEl = document.createElement('div');
-    statusEl.className = 'world-status';
-
-    /* 箭头 */
-    var joinEl = document.createElement('div');
-    joinEl.className = 'world-join';
-    if (server.join) joinEl.dataset.join = server.join;
-
-    joinEl.addEventListener('click', function(e) {
-      e.stopPropagation();
-      setSelected(server);
-      if (server.alert === 'error') return;
-      callHandle(server, 'onJoin');
-    });
-
-    /* 警告 */
-    var alertEl = document.createElement('div');
-    alertEl.className = 'world-alert';
-    if (server.alert) alertEl.dataset.alert = server.alert;
-
-    alertEl.addEventListener('mouseenter', function() {
-      if (server.alert === 'error') return;
-      if (!server.join) return;
-      joinEl.style.backgroundImage = 'url("' + getJoinHighlighted(server) + '")';
-    });
-    alertEl.addEventListener('mouseleave', function() {
-      joinEl.style.backgroundImage = '';
-    });
-
-    alertEl.addEventListener('click', function(e) {
-      e.stopPropagation();
-      setSelected(server);
-      callHandle(server, 'onAlertClick');
-      if (server.alert === 'error') return;
-      callHandle(server, 'onJoin');
-    });
-
-    statusEl.appendChild(joinEl);
-    statusEl.appendChild(alertEl);
-    iconWrap.appendChild(statusEl);
-
-    /* 文字 */
-    var infoEl = document.createElement('div');
-    infoEl.className = 'world-info';
-
-    var nameEl = document.createElement('div');
-    nameEl.className = 'world-name';
-    nameEl.textContent = server.name || '';
-
-    var descEl = document.createElement('div');
-    descEl.className = 'world-meta';
-    descEl.textContent = server.description || '';
-
-    infoEl.appendChild(nameEl);
-    infoEl.appendChild(descEl);
-
-    el.appendChild(iconWrap);
-    el.appendChild(infoEl);
-
-    /* 单击选中 */
-    el.addEventListener('click', function() {
-      setSelected(server);
-    });
-
-    /* 双击进入 */
-    el.addEventListener('dblclick', function() {
-      setSelected(server);
-      if (server.alert === 'error') return;
-      callHandle(server, 'onJoin');
-    });
-
-    server._el = el;
-    return el;
-  }
-
-  function renderList() {
-    listEl.innerHTML = '';
-    for (var i = 0; i < SERVERS.length; i++) {
-      listEl.appendChild(createEntry(SERVERS[i]));
-    }
-    selected = null;
-    updateButtonState();
-  }
-
   /* ==========================================================
      选中状态
      ========================================================== */
-  var selected = null;
-
   function setSelected(server) {
     selected = server || null;
-
     for (var i = 0; i < SERVERS.length; i++) {
       var s = SERVERS[i];
       if (s._el) s._el.classList.toggle('selected', s === selected);
@@ -505,34 +537,17 @@
 
   function updateButtonState() {
     var active  = !!selected;
-    var isError = active && selected.alert === 'error';
-
-    btnJoin.disabled   = !active || isError;
+    var joinable = active && selected.state === 'online';
+    btnSelect.disabled = !joinable;
     btnEdit.disabled   = !active;
     btnDelete.disabled = !active;
   }
 
   /* ==========================================================
-     搜索
-     ========================================================== */
-  function applyFilter(q) {
-    q = (q || '').trim().toLowerCase();
-    for (var i = 0; i < SERVERS.length; i++) {
-      var s = SERVERS[i];
-      if (!s._el) continue;
-      var hay = ((s.name || '') + ' ' + (s.description || '')).toLowerCase();
-      var hit = !q || hay.indexOf(q) >= 0;
-      s._el.style.display = hit ? '' : 'none';
-    }
-    setSelected(null);
-  }
-
-  /* ==========================================================
      底部按钮
      ========================================================== */
-  btnJoin.addEventListener('click', function() {
-    if (!selected) return;
-    if (selected.alert === 'error') return;
+  btnSelect.addEventListener('click', function() {
+    if (!selected || selected.state !== 'online') return;
     callHandle(selected, 'onJoin');
   });
 
@@ -555,18 +570,13 @@
   });
 
   btnDirect.addEventListener('click', function() {
-    console.log('[multiplayer] direct connect');
-  });
-
-  searchBox.addEventListener('input', function() {
-    applyFilter(searchBox.value);
+    console.log('[multiplayer] direct connection');
   });
 
   /* ==========================================================
-     局域网扫描动画
-     Ooo → oOo → ooO → oOo，每 0.4s 切换一格
+     局域网扫描动画（LoadingDotsText：300ms 一帧）
      ========================================================== */
-  var SCAN_FRAMES = ['Ooo', 'oOo', 'ooO', 'oOo'];
+  var SCAN_FRAMES = ['O o o', 'o O o', 'o o O', 'o O o'];
   var scanAnimEl  = document.getElementById('server-scan-anim');
   if (scanAnimEl) {
     var scanFrame = 0;
@@ -574,12 +584,56 @@
     setInterval(function() {
       scanFrame = (scanFrame + 1) % SCAN_FRAMES.length;
       scanAnimEl.textContent = SCAN_FRAMES[scanFrame];
-    }, 400);
+    }, 300);
   }
 
-  /* 启动 */
+  /* pinging 条目每 100ms 刷新信号图标 */
+  setInterval(function() {
+    var now = Date.now();
+    for (var i = 0; i < SERVERS.length; i++) {
+      var s = SERVERS[i];
+      if (s.state === 'pinging' && s._pingEl) {
+        s._pingEl.style.backgroundImage = 'url("' + pingingSprite(i, now) + '")';
+      }
+    }
+  }, 100);
+
+  /* ==========================================================
+     SafetyScreen（Security Warning）
+     ========================================================== */
+  var safetyScreen    = document.getElementById('safety-screen');
+  var safetyCheck     = document.getElementById('safety-check');
+  var safetyCheckRow  = document.getElementById('safety-check-row');
+  var safetyChecked   = false;
+
+  safetyCheckRow.addEventListener('click', function() {
+    safetyChecked = !safetyChecked;
+    safetyCheck.dataset.checked = safetyChecked ? 'true' : 'false';
+  });
+
+  document.getElementById('btn-safety-proceed').addEventListener('click', function() {
+    if (safetyChecked) {
+      try { localStorage.setItem(SAFETY_KEY, 'true'); } catch (e) {}
+    }
+    safetyScreen.classList.remove('visible');
+  });
+
+  document.getElementById('btn-safety-back').addEventListener('click', function() {
+    location.href = 'index.html';
+  });
+
+  var skipWarning = false;
+  try { skipWarning = localStorage.getItem(SAFETY_KEY) === 'true'; } catch (e) {}
+  if (!skipWarning) safetyScreen.classList.add('visible');
+
+  /* ==========================================================
+     启动
+     ========================================================== */
   renderList();
-  updateButtonState();
+
+  /* 语言切换后重绘（玩家数等动态文本） */
+  document.addEventListener('i18n-ready', function() { renderList(); });
+  if (window.i18n && i18n.ready) i18n.ready(function() { renderList(); });
 })();
 </script>
 

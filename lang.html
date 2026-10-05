@@ -13,6 +13,10 @@
 <link rel="preload" as="image" href="assets/background/panorama_4.png">
 <link rel="preload" as="image" href="assets/background/panorama_5.png">
 <link rel="preload" as="image" href="assets/background/menu_list_background.png">
+<link rel="preload" as="image" href="assets/widget/tab.png">
+<link rel="preload" as="image" href="assets/widget/tab_selected.png">
+<link rel="preload" as="image" href="assets/widget/tab_highlighted.png">
+<link rel="preload" as="image" href="assets/widget/tab_selected_highlighted.png">
 <link rel="preload" as="audio" href="assets/sound/click.ogg">
 
 <link rel="stylesheet" href="css/main.css">
@@ -49,7 +53,8 @@
     overflow: visible;
   }
 
-  /* Header: 12 + 9 + 15 = 36 */
+  /* Header: 12 + 9 + 15 = 36px
+     .lang-title (12px font, 1px shadow below → ~13px visual) + 4px gap + search field (15px) = ~32px */
   .lang-header {
     flex: 0 0 36px;
     display: flex;
@@ -73,7 +78,7 @@
   .lang-search-wrap { display: flex; justify-content: center; }
   .lang-search-wrap .mc-input { width: 200px; height: 15px; }
 
-  /* Content */
+  /* Content area */
   .lang-content {
     flex: 1 1 auto;
     overflow-y: auto;
@@ -84,11 +89,12 @@
     image-rendering: pixelated;
   }
 
- 
+  .lang-list {
+    display: flex;
+    flex-direction: column;
+  }
 
-  .lang-list { display: flex; flex-direction: column; }
-
-  /* Entry 高 18，居中显示语言名 */
+  /* Language entry — 18px tall, tab-based selected state (#16) */
   .lang-entry {
     height: 18px;
     padding: 0 4px;
@@ -104,15 +110,56 @@
     color: #ffffff;
     text-shadow: 1px 1px 0 #3f3f3f;
     white-space: nowrap;
+    /* Tab state backgrounds (hidden by default) */
+    background: transparent;
+    box-shadow: none;
   }
 
   .lang-entry:hover {
     background: rgba(255, 255, 255, 0.08);
+    /* Non-selected tab on hover: widget/tab (9-slice border 2, auto-width) */
+    background-image: url('assets/widget/tab.png');
+    background-size: auto 18px;
+    background-repeat: no-repeat;
+    background-position: center;
+    /* Cover 2px border above + 16px content = full 18px height centered */
+    image-rendering: pixelated;
   }
 
-  .lang-entry.selected {
-    background: rgba(255, 255, 255, 0.16);
-    box-shadow: inset 0 0 0 1px #ffffff;
+  /* Tab background — 9-slice, border 2px on left/right/top (bottom=0), stretches vertically */
+  /* Tab base (normal): widget/tab.png, 9-slice border 2 */
+  .lang-entry.tab-base {
+    background-image: url('assets/widget/tab.png');
+    background-size: auto 18px;
+    background-repeat: no-repeat;
+    background-position: center;
+    image-rendering: pixelated;
+  }
+
+  /* Selected: widget/tab_selected.png (9-slice border 2, full 130x24 mapped to 18px tall) */
+  .lang-entry.tab-selected {
+    background-image: url('assets/widget/tab_selected.png');
+    background-size: auto 18px;
+    background-repeat: no-repeat;
+    background-position: center;
+    image-rendering: pixelated;
+  }
+
+  .lang-entry.tab-selected:hover {
+    background-image: url('assets/widget/tab_selected_highlighted.png');
+    background-size: auto 18px;
+    background-repeat: no-repeat;
+    background-position: center;
+    image-rendering: pixelated;
+  }
+
+  /* Non-selected tab on hover */
+  .lang-entry.tab-base:hover {
+    background-image: url('assets/widget/tab_highlighted.png');
+    background-size: auto 18px;
+    background-repeat: no-repeat;
+    background-position: center;
+    image-rendering: pixelated;
   }
 
   /* Footer: 53px */
@@ -142,6 +189,9 @@
     gap: 8px;
   }
 
+  /* Font Settings button (#17): uses the same mcbtn-150 class, label is data-i18n */
+  /* No extra CSS needed — button text comes from language file */
+
   #pano-cover { background: rgba(0, 0, 0, 0.35); }
 </style>
 
@@ -166,9 +216,9 @@
     </div>
   </div>
 
-<div class="lang-content mc-scroll">
-  <div class="lang-list" id="lang-list"></div>
-</div>
+  <div class="lang-content mc-scroll">
+    <div class="lang-list" id="lang-list"></div>
+  </div>
 
   <div class="lang-footer">
     <div class="lang-warning" data-i18n="options.language.warning">Note: Some languages are not fully translated</div>
@@ -189,7 +239,7 @@
   'use strict';
 
   /* ==========================================================
-     可用语言列表（要加语言时在这里追加）
+     Available languages
      ========================================================== */
   var LANGUAGES = [
     { code: 'en_us', name: 'English (US)',  region: 'United States' },
@@ -202,30 +252,45 @@
   var btnFont   = document.getElementById('btn-font');
 
   var currentLang = (window.i18n && window.i18n.getLang) ? window.i18n.getLang() : 'en_us';
-  var selected = null;
+  var selected    = null;
+  var hovered     = null;
 
   /* ==========================================================
-     渲染列表
+     Render the language list, applying tab-state backgrounds
+     based on whether an entry is selected + hovered.
      ========================================================== */
   function render(filter) {
     filter = (filter || '').trim().toLowerCase();
     listEl.innerHTML = '';
     selected = null;
+    hovered  = null;
 
     for (var i = 0; i < LANGUAGES.length; i++) {
       var lang = LANGUAGES[i];
-      var hay = (lang.name + ' ' + lang.region + ' ' + lang.code).toLowerCase();
+      var hay  = (lang.name + ' ' + lang.region + ' ' + lang.code).toLowerCase();
       if (filter && hay.indexOf(filter) < 0) continue;
 
       var el = document.createElement('div');
-      el.className = 'lang-entry';
+      el.className = 'lang-entry tab-base';
       el.textContent = lang.name + ' (' + lang.code + ')';
       el.dataset.code = lang.code;
 
       if (lang.code === currentLang) {
-        el.classList.add('selected');
+        // Mark as tab-selected immediately so CSS class reflects state
+        el.classList.remove('tab-base');
+        el.classList.add('tab-selected');
         selected = el;
       }
+
+      el.addEventListener('mouseenter', function() {
+        hovered = this;
+        refreshTabState(this);
+      });
+
+      el.addEventListener('mouseleave', function() {
+        hovered = null;
+        refreshTabState(this);
+      });
 
       el.addEventListener('click', function() {
         selectEntry(this);
@@ -240,17 +305,51 @@
     }
   }
 
-  function selectEntry(el) {
-    var all = listEl.querySelectorAll('.lang-entry');
-    for (var i = 0; i < all.length; i++) {
-      all[i].classList.remove('selected');
+  /* Update tab CSS class based on selected + hover state.
+     State machine matches MenuTabButton / WidgetSprites logic:
+       - Default (normal): tab.png  — class "tab-base"
+       - Hovered (normal): tab_highlighted.png — class "tab-base tab-hovered"
+       - Selected: tab_selected.png — class "tab-selected"
+       - Selected + Hovered: tab_selected_highlighted.png — class "tab-selected tab-hovered"
+  */
+  function refreshTabState(el) {
+    var isSelected = el.classList.contains('tab-selected');
+    var isHovered  = (el === hovered);
+
+    // Remove all tab classes
+    el.classList.remove('tab-base', 'tab-selected', 'tab-hovered');
+
+    if (isSelected) {
+      el.classList.add('tab-selected');
+      if (isHovered) el.classList.add('tab-hovered');
+    } else {
+      el.classList.add('tab-base');
+      if (isHovered) el.classList.add('tab-hovered');
     }
-    el.classList.add('selected');
-    selected = el;
   }
 
   /* ==========================================================
-     应用选中的语言并返回上一页
+     Select an entry (sets selected state)
+     ========================================================== */
+  function selectEntry(el) {
+    // Clear previous selection
+    var all = listEl.querySelectorAll('.lang-entry');
+    for (var i = 0; i < all.length; i++) {
+      var e = all[i];
+      e.classList.remove('tab-selected');
+      e.classList.add('tab-base');
+      if (e === hovered) refreshTabState(e);
+    }
+
+    // Mark new selection
+    el.classList.remove('tab-base');
+    el.classList.add('tab-selected');
+    selected = el;
+    refreshTabState(el);
+  }
+
+  /* ==========================================================
+     Apply selection and return to main menu
      ========================================================== */
   function applySelection() {
     if (selected && window.i18n && window.i18n.setLang) {
@@ -260,7 +359,7 @@
   }
 
   /* ==========================================================
-     交互
+     Interactions
      ========================================================== */
   searchBox.addEventListener('input', function() {
     render(searchBox.value);
@@ -271,18 +370,18 @@
   });
 
   btnFont.addEventListener('click', function() {
-    console.log('[lang] Font options (not implemented)');
+    console.log('[lang] Font Settings (options.font) — not implemented in web port');
   });
 
   /* ==========================================================
-     启动
+     Bootstrap
      ========================================================== */
   render('');
 
-  /* i18n 加载完后刷新文本（如果晚于本脚本） */
+  /* Refresh i18n text if it loads after this script */
   if (window.i18n && window.i18n.ready) {
     window.i18n.ready(function() {
-      /* 标题、搜索框 hint、按钮文本已通过 data-i18n 更新 */
+      /* Title, search hint and buttons update via data-i18n */
     });
   }
 })();

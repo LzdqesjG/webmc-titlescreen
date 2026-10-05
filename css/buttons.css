@@ -128,6 +128,12 @@
 /* --- 150×20（Play Selected World / Create New World，跨 2 列） --- */
 .mcbtn-150 { width: 150px; height: 20px; }
 
+/* --- 100×20（多人页第一行 / Realms 页全部按钮） --- */
+.mcbtn-100 { width: 100px; height: 20px; }
+
+/* --- 74×20（多人页第二行） --- */
+.mcbtn-74  { width:  74px; height: 20px; }
+
 /* ============ 交互态：只切换描边 / 填充 / 斜面颜色 ============ */
 .mcbtn:hover:not(:disabled) {
   border-color: #ffffff;

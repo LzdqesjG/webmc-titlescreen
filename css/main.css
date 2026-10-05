@@ -35,3 +35,14 @@ body {
   position: relative;
 }
 
+/* ============ 需要可选中的区域（#3） ============
+   全局默认禁止选中以模拟游戏 UI，个别需要复制/选中的区域
+   在此显式放开，避免被 body 的 user-select:none 波及。
+   局域网扫描块（multiplayer）允许用户选中其中的文字。 */
+.world-scan,
+.world-scan-text,
+.world-scan-anim {
+  -webkit-user-select: text;
+  user-select: text;
+}
+
