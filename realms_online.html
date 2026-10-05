@@ -58,7 +58,8 @@
   .world-header {
     flex: 0 0 44px;
     display: grid;
-    grid-template-columns: 90px 1fr 90px;
+    /* 左右 1fr 对称，auto 居中列放 logo；右侧列承载通知按钮 + What is Realms? 链接 */
+    grid-template-columns: 1fr auto 1fr;
     align-items: center;
     box-sizing: border-box;
     box-shadow: 0 1px 0 rgba(0,0,0,0.55);
@@ -80,10 +81,26 @@
   }
 
   .realms-header-buttons {
-    justify-self: center;
+    justify-self: end;
     display: flex;
     align-items: center;
     gap: 4px;
+  }
+  /* 右上角 "What is Realms?" 文字链接（经典 Realms 界面入口） */
+  .realms-whatis-link {
+    margin-left: 4px;
+    font-family: 'Minecraft', monospace;
+    font-size: 9px;
+    line-height: 1;
+    color: #ffffff;
+    text-shadow: 1px 1px 0 #3f3f3f;
+    text-decoration: none;
+    white-space: nowrap;
+    cursor: pointer;
+  }
+  .realms-whatis-link:hover {
+    color: #ffff55;
+    text-decoration: underline;
   }
 
   /* 通知按钮（20×20，内含 14×14 图标 + 右上角 8×8 角标） */
@@ -373,7 +390,7 @@
 <div class="world-screen">
 
   <div class="world-header">
-    <div class="realms-header-buttons" style="grid-column: 3; justify-self: center;">
+    <div class="realms-header-buttons" style="grid-column: 3; justify-self: end;">
       <button class="mcbtn mcbtn-icon notice-btn" id="btn-invites" data-badge="1"
               title="Pending Invites" data-i18n-title="mco.invites.title">
         <img src="assets/icon/invite.png" alt="">
@@ -384,6 +401,10 @@
         <img src="assets/icon/news.png" alt="">
         <span class="notice-badge" id="badge-news"></span>
       </button>
+      <a class="realms-whatis-link" id="btn-whatis"
+         href="https://www.minecraft.net/en-us/realms" target="_blank" rel="noopener noreferrer"
+         title="What is Realms?" data-i18n-title="mco.selectServer.whatIsRealms"
+         data-i18n="mco.selectServer.whatIsRealms">What is Realms?</a>
     </div>
     <div class="realms-logo" style="grid-column: 2; justify-self: center;"></div>
   </div>
