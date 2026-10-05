@@ -46,7 +46,6 @@
 .splash-text {
   display: inline-block;
   font-family: 'Minecraft', monospace;
-  font-size: 16px;
   color: #ffff00;
   text-shadow: 1px 1px 0 #3f3f3f;
   white-space: nowrap;

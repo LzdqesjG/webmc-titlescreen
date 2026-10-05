@@ -69,7 +69,6 @@
   cursor: pointer;
   image-rendering: pixelated;
   font-family: 'Minecraft', monospace;
-  font-size: 8px;
   color: #ffffff;
   text-shadow: 1px 1px 0 #3f3f3f;
   display: inline-flex;
@@ -234,7 +233,6 @@
   cursor: pointer;
   user-select: none;
   font-family: 'Minecraft', monospace;
-  font-size: 16px;
   line-height: 1;
   color: #ffffff;
   text-shadow: 1px 1px 0 #3f3f3f;
