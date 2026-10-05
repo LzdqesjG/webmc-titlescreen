@@ -14,26 +14,37 @@ website/
 ├── js/               # 交互脚本
 └── assets/           # 原版贴图 / 音效资源
 ```
+## 按钮：纯 CSS 无缝绘制
 
-## 按钮贴图：9-slice（九宫格拼接）
+按钮原先按每种尺寸各切一张贴图（20 / 71 / 98 / 150 / 200 × 20 共 16 张），体积冗余。
+之后曾改用 **9-slice**（`border-image` + 7×7 精灵图），但它在浏览器里会露缝：
 
-按钮原先按每种尺寸各切一张贴图（20 / 71 / 98 / 150 / 200 × 20 共 16 张），
-体积冗余且新增尺寸就要再加图。现改为 **9-slice** 方案：
+- `border-image` 会把图**切成 9 块分别绘制**；
+- 而外层 `.screen` 的 `transform: scale(var(--ui-scale))` 恒为小数（`uiscale.js` 保留 3 位）；
+- 切片边界被抗锯齿错位、透出页面背景，于是按钮上出现一条**白线**（缩放越大越明显）；
+- 悬停态外圈本就是纯白，这条缝在悬停时尤其显眼。
 
-- 一张 **7×7** 精灵图（`assets/button/button_9s.png` 及高亮/禁用共 3 张）覆盖所有尺寸；
-- CSS 用 `border-image: url(...) 3 fill stretch;`：
-  - 4 个 `3×3` 角 1:1 还原（边框丝毫不失真）；
-  - 4 条边按需拉伸；
-  - 中间 `1×1` 拉伸填充，配合 `image-rendering: pixelated` 保持像素风。
-- 每种按钮只需给出 `width / height` 即可，交互态只切换精灵图源。
+现改为 **纯 CSS 直接绘制**（不再依赖任何按钮位图）：
 
-体积：**16 张 ≈ 16.2 KB → 3 张 ≈ 0.3 KB（约 −98%）**。
-
-### 重新生成精灵图
-
-```bash
-python3 tools/mkslice.py   # 依赖 Pillow；从原尺寸贴图提取角/边
+```css
+.mcbtn {
+  border: 1px solid #000000;                                       /* 外描边 */
+  background-color: #6f6f6f;                                       /* 填充 */
+  box-shadow: inset 1px 1px 0 #aaaaaa, inset -1px -1px 0 #565656;  /* 内斜面 */
+}
+.mcbtn:hover:not(:disabled) {
+  border-color: #ffffff; background-color: #757575;
+  box-shadow: inset 1px 1px 0 #afafaf, inset -1px -1px 0 #5c5c5c;
+}
+.mcbtn:disabled { background-color: #2c2c2c; box-shadow: none; }
 ```
+
+- 整个按钮由**同一个元素一次绘制**，不存在切片接缝，任意尺寸 / 任意缩放下都没有白线；
+- 颜色直接取自原贴图，三态与原贴图平均色差 ≈ 1%；
+- 按钮位图全部移除（`assets/button/button_9s*.png` 与 `tools/mkslice.py` 已删），体积进一步归零。
+
+每种按钮只需给出 `width / height`（`.mcbtn-long` / `-half` / `-icon` / `-71` / `-150`）。
+
 
 ## 本地预览
 

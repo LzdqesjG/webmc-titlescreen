@@ -55,16 +55,18 @@
 
 /* ============ 按钮通用 ============ */
 .mcbtn {
-  /* 9-slice（九宫格拼接）：
-     一张 7×7 精灵图即可覆盖任意尺寸——
-     4 个 3×3 角 1:1 还原、4 条边按需拉伸、中间 1×1 填充拉伸。
-     原先按尺寸切出的 16 张图已移除（≈16 KB → ≈0.3 KB）。 */
+  /* 无缝方案：
+     原先用 border-image 做 9-slice，但 border-image 会把图「切成 9 块
+     分别绘制」，而父级 .screen 的 scale(--ui-scale) 恒为小数，
+     切片边界被抗锯齿错位、露出页面背景 → 就是那条白线（缩放越大越明显）。
+     现在改为「同一元素直接绘制」：1px 黑描边 + 1px 内斜面 + 纯色填充，
+     颜色直接取自原贴图，任意尺寸 / 任意缩放下都不会有接缝。 */
   box-sizing: border-box;
-  border: 3px solid transparent;
-  border-image: url('../assets/button/button_9s.png') 3 fill stretch;
+  border: 1px solid #000000;
+  background-color: #6f6f6f;
+  box-shadow: inset 1px 1px 0 #aaaaaa, inset -1px -1px 0 #565656;
   padding: 0;
   cursor: pointer;
-  background: none;
   image-rendering: pixelated;
   font-family: 'Minecraft', monospace;
   font-size: 8px;
@@ -84,7 +86,7 @@
   -webkit-tap-highlight-color: transparent;
 }
 
-/* ============ 尺寸（仅尺寸不同；贴图由 .mcbtn 的 9-slice 统一处理） ============ */
+/* ============ 尺寸（仅尺寸不同；描边/填充由 .mcbtn 统一绘制） ============ */
 .mcbtn-long { width: 200px; height: 20px; }
 .mcbtn-half { width:  98px; height: 20px; }
 .mcbtn-icon { width:  20px; height: 20px; }
@@ -127,12 +129,16 @@
 /* --- 150×20（Play Selected World / Create New World，跨 2 列） --- */
 .mcbtn-150 { width: 150px; height: 20px; }
 
-/* ============ 交互态：9-slice 只切换精灵图 ============ */
+/* ============ 交互态：只切换描边 / 填充 / 斜面颜色 ============ */
 .mcbtn:hover:not(:disabled) {
-  border-image-source: url('../assets/button/button_9s_highlighted.png');
+  border-color: #ffffff;
+  background-color: #757575;
+  box-shadow: inset 1px 1px 0 #afafaf, inset -1px -1px 0 #5c5c5c;
 }
 .mcbtn:disabled {
-  border-image-source: url('../assets/button/button_9s_disabled.png');
+  border-color: #000000;
+  background-color: #2c2c2c;
+  box-shadow: none;
 }
 /* ==========================================================
    Lock Button（20×20，锁定/解锁 切换按钮）
