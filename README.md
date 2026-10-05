@@ -20,6 +20,13 @@ website/
 └── assets/           # 原版贴图 / 音效资源
 ```
 
+### 标题画面
+
+- 三个图标按钮（`.icon-row`）：Friends（`disabled` 占位）、Language（进入 `lang.html`）、
+  **Accessibility（辅助功能，最右）** —— 点击后在新标签页打开本项目 GitHub 主页
+  （`https://github.com/LzdqesjG/webmc-titlescreen`）。
+- 左下角版本号 `Minecraft 26.2`、右下角版权按钮：样式位于**仅被 `index.html` 引用**的 `css/index.css`。
+
 ### 多人游戏 / Realms / 开发者菜单
 
 - `mstart.html` 以 `sstart.html` 为模板改写：结构、条目渲染、选中与搜索逻辑完全复用，仅替换文案与底部按钮
