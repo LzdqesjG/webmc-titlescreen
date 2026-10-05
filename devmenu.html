@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Developer Menu</title>
+
+<link rel="preload" as="image" href="assets/background/panorama_equirect.png">
+<link rel="preload" as="image" href="assets/background/panorama_0.png">
+<link rel="preload" as="image" href="assets/background/panorama_1.png">
+<link rel="preload" as="image" href="assets/background/panorama_2.png">
+<link rel="preload" as="image" href="assets/background/panorama_3.png">
+<link rel="preload" as="image" href="assets/background/panorama_4.png">
+<link rel="preload" as="image" href="assets/background/panorama_5.png">
+<link rel="preload" as="image" href="assets/background/menu_list_background.png">
+<link rel="preload" as="audio" href="assets/sound/click.ogg">
+<link rel="preload" as="script" href="js/i18n.js">
+<link rel="stylesheet" href="css/main.css">
+<link rel="stylesheet" href="css/pano.css">
+<link rel="stylesheet" href="css/buttons.css">
+<link rel="stylesheet" href="css/slider.css">
+<style>
+  html, body {
+    margin: 0; padding: 0;
+    width: 100%; height: 100%;
+    overflow: hidden;
+  }
+
+  body {
+    color: #fff;
+    font-family: 'Minecraft', monospace;
+    -webkit-font-smoothing: none;
+    font-smooth: never;
+    position: relative;
+  }
+
+  .world-screen {
+    position: fixed;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%) scale(var(--ui-scale, 1));
+    transform-origin: top center;
+    width:  calc(100vw / var(--ui-scale, 1));
+    height: calc(100vh / var(--ui-scale, 1));
+    display: flex;
+    flex-direction: column;
+    z-index: 1;
+    overflow: visible;
+  }
+
+  /* ============ Header ============ */
+  .world-header {
+    flex: 0 0 52px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    box-sizing: border-box;
+  }
+
+  .world-title {
+    font-family: 'Minecraft', monospace;
+    font-size: 20px;
+    line-height: 1;
+    color: #ffffff;
+    text-shadow: 1px 1px 0 #3f3f3f;
+    white-space: nowrap;
+    user-select: none;
+  }
+
+  .world-subtitle {
+    font-family: 'Minecraft', monospace;
+    font-size: 14px;
+    line-height: 1;
+    color: #c9a227;
+    text-shadow: 1px 1px 0 #1a1a1a;
+    white-space: nowrap;
+    user-select: none;
+  }
+
+  /* ============ Content ============ */
+  .world-content {
+    flex: 1 1 auto;
+    overflow-y: auto;
+    overflow-x: hidden;
+    background-image: url('assets/background/menu_list_background.png');
+    background-repeat: repeat;
+    background-size: 32px 32px;
+    image-rendering: pixelated;
+  }
+
+  .dev-group {
+    padding: 8px 8px 2px;
+    font-family: 'Minecraft', monospace;
+    font-size: 15px;
+    line-height: 1;
+    color: #c9a227;
+    text-shadow: 1px 1px 0 #1a1a1a;
+    user-select: none;
+  }
+
+  .dev-item {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    height: 30px;
+    padding: 0 8px;
+    box-sizing: border-box;
+    cursor: pointer;
+    user-select: none;
+    gap: 8px;
+  }
+
+  .dev-item:hover { background: rgba(255, 255, 255, 0.08); }
+
+  .dev-item.selected {
+    background: rgba(255, 255, 255, 0.16);
+    box-shadow: inset 0 0 0 1px #ffffff;
+  }
+
+  .dev-cmd {
+    flex: 0 0 auto;
+    font-family: 'Minecraft', monospace;
+    font-size: 18px;
+    line-height: 1;
+    color: #ffffff;
+    text-shadow: 1px 1px 0 #3f3f3f;
+    white-space: nowrap;
+  }
+
+  .dev-cmd::before {
+    content: '> ';
+    color: #7f7f7f;
+  }
+
+  .dev-desc {
+    flex: 1 1 auto;
+    min-width: 0;
+    text-align: right;
+    font-family: 'Minecraft', monospace;
+    font-size: 14px;
+    line-height: 1;
+    color: #808080;
+    text-shadow: 1px 1px 0 #1a1a1a;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .dev-item.danger .dev-cmd { color: #ff8080; }
+
+  .dev-empty {
+    padding: 12px 8px;
+    font-family: 'Minecraft', monospace;
+    font-size: 14px;
+    color: #808080;
+    text-overflow: ellipsis;
+  }
+
+  /* ============ Footer ============ */
+  .world-footer {
+    flex: 0 0 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    box-sizing: border-box;
+  }
+
+  #pano-cover { background: rgba(0, 0, 0, 0.55); }
+</style>
+
+<style id="target-style">
+  @font-feature-values VulnTestFont {
+    @styleset {
+      entry_a: 1; entry_b: 2; entry_c: 3; entry_d: 4;
+      entry_e: 5; entry_f: 6; entry_g: 7; entry_h: 8;
+    }
+  }
+</style>
+
+<script src="js/exit.js"></script>
+</head>
+<body>
+
+<audio id="sfx-click" src="assets/sound/click.ogg" preload="auto"></audio>
+<script src="js/clicksound.js"></script>
+
+<canvas id="pano-canvas"></canvas>
+<div id="pano-css"></div>
+<div id="pano-cover"></div>
+
+<div class="world-screen">
+
+  <div class="world-header">
+    <div class="world-title" data-i18n="devmenu.title">Developer Menu</div>
+    <div class="world-subtitle">存在bug并不被动修复</div>
+  </div>
+
+  <div class="world-content mc-scroll">
+    <div id="dev-list"></div>
+  </div>
+
+  <div class="world-footer">
+    <a class="mcbtn mcbtn-150" id="btn-back" href="mstart.html" data-i18n="devmenu.backToList">Back</a>
+  </div>
+
+</div>
+
+<script src="js/show_background.js"></script>
+<script src="js/uiscale.js"></script>
+<script src="js/i18n.js"></script>
+<script src="js/slider.js"></script>
+<script>
+(function() {
+  'use strict';
+
+  var SCALE_KEY = 'dev_ui_scale';
+  var SCALE_STEPS = ['auto', '0.75', '1.0', '1.5', '2.0'];
+
+  function t(key) {
+    return (window.i18n && window.i18n.t) ? window.i18n.t(key) : key;
+  }
+
+  /* ==========================================================
+     测试功能
+     ========================================================== */
+
+  /* --- UI 缩放：在 auto → 0.75 → 1.0 → 1.5 → 2.0 间循环 --- */
+  function currentScaleStep() {
+    var v = null;
+    try { v = sessionStorage.getItem(SCALE_KEY); } catch (e) {}
+    return (v && SCALE_STEPS.indexOf(v) >= 0) ? v : 'auto';
+  }
+
+  function applyScaleOverride() {
+    var step = currentScaleStep();
+    if (step === 'auto') return; /* uiscale.js 自己算 */
+    document.documentElement.style.setProperty('--ui-scale', step);
+  }
+
+  function cycleScale() {
+    var idx = SCALE_STEPS.indexOf(currentScaleStep());
+    var next = SCALE_STEPS[(idx + 1) % SCALE_STEPS.length];
+    try {
+      if (next === 'auto') sessionStorage.removeItem(SCALE_KEY);
+      else sessionStorage.setItem(SCALE_KEY, next);
+    } catch (e) {}
+
+    if (next === 'auto') {
+      /* 触发 uiscale.js 重算，再由本页的 resize 监听决定是否覆盖 */
+      window.dispatchEvent(new Event('resize'));
+    }
+    applyScaleOverride();
+  }
+
+  function scaleDesc() {
+    var step = currentScaleStep();
+    var css = getComputedStyle(document.documentElement)
+      .getPropertyValue('--ui-scale').trim() || '1';
+    var state = (step === 'auto') ? t('devmenu.state.auto') : t('devmenu.state.on');
+    return state + ' · ' + css + '×';
+  }
+
+  /* uiscale.js 先于本脚本注册 resize，会在它之后执行 → 覆盖生效 */
+  window.addEventListener('resize', applyScaleOverride);
+  applyScaleOverride();
+
+  /* --- 当前语言 --- */
+  function showLang() {
+    var lang = (window.i18n && window.i18n.getLang) ? window.i18n.getLang() : 'unknown';
+    alert('Language: ' + lang);
+  }
+
+  /* --- 诊断信息 --- */
+  function showDiag() {
+    var css = getComputedStyle(document.documentElement)
+      .getPropertyValue('--ui-scale').trim() || '1';
+    var lang = (window.i18n && window.i18n.getLang) ? window.i18n.getLang() : 'unknown';
+    var lines = [
+      'URL: ' + location.href,
+      'Language: ' + lang,
+      'Viewport: ' + window.innerWidth + ' × ' + window.innerHeight,
+      'devicePixelRatio: ' + window.devicePixelRatio,
+      'UI scale: ' + css + '×',
+      'UA: ' + navigator.userAgent
+    ];
+    alert(lines.join('\n'));
+  }
+
+  /* --- 清除本地存储 --- */
+  function clearStorage() {
+    if (!confirm('Clear localStorage / sessionStorage ?')) return;
+    try { localStorage.clear(); } catch (e) {}
+    try { sessionStorage.clear(); } catch (e) {}
+    location.reload();
+  }
+
+  /* --- 退出游戏测试（复用 exit.js 的崩溃路径） --- */
+  function crashTest() {
+    if (!confirm('Run the quit/crash test? The page may become unresponsive.')) return;
+    if (typeof window.exit === 'function') window.exit();
+    else alert('exit() unavailable');
+  }
+
+  /* ==========================================================
+     菜单定义
+     ========================================================== */
+  var ITEMS = [
+    { group: 'devmenu.group.ui' },
+    { cmd: 'devmenu.open.title', desc: 'index.html',  href: 'index.html' },
+    { cmd: 'devmenu.open.world', desc: 'sstart.html', href: 'sstart.html' },
+    { cmd: 'devmenu.open.multi', desc: 'mstart.html', href: 'mstart.html' },
+    { cmd: 'devmenu.open.lang',  desc: 'lang.html',   href: 'lang.html' },
+
+    { group: 'devmenu.group.test' },
+    { cmd: 'devmenu.scale',  descFn: scaleDesc, action: cycleScale },
+    { cmd: 'devmenu.lang',   descFn: function() {
+        return (window.i18n && window.i18n.getLang) ? window.i18n.getLang() : '?';
+      }, action: showLang },
+    { cmd: 'devmenu.diag',   desc: 'alert()', action: showDiag },
+    { cmd: 'devmenu.clear',  desc: 'localStorage.clear()', danger: true, action: clearStorage },
+    { cmd: 'devmenu.reload', desc: 'location.reload()', action: function() { location.reload(); } },
+    { cmd: 'devmenu.crash',  desc: 'exit()', danger: true, action: crashTest }
+  ];
+
+  /* ==========================================================
+     渲染
+     ========================================================== */
+  var listEl = document.getElementById('dev-list');
+  var selectedEl = null;
+
+  function render() {
+    listEl.innerHTML = '';
+    selectedEl = null;
+
+    for (var i = 0; i < ITEMS.length; i++) {
+      var it = ITEMS[i];
+
+      if (it.group) {
+        var g = document.createElement('div');
+        g.className = 'dev-group';
+        g.textContent = t(it.group);
+        listEl.appendChild(g);
+        continue;
+      }
+
+      var row = document.createElement('div');
+      row.className = 'dev-item' + (it.danger ? ' danger' : '');
+
+      var cmd = document.createElement('div');
+      cmd.className = 'dev-cmd';
+      cmd.textContent = t(it.cmd);
+
+      var desc = document.createElement('div');
+      desc.className = 'dev-desc';
+      desc.textContent = it.descFn ? it.descFn() : (it.desc || '');
+
+      row.appendChild(cmd);
+      row.appendChild(desc);
+
+      /* 用闭包捕获当前项 */
+      (function(item, rowEl) {
+        rowEl.addEventListener('click', function() {
+          select(rowEl);
+          if (item.href) { location.href = item.href; return; }
+          if (typeof item.action === 'function') item.action();
+          /* 行为可能改变状态（如缩放/清空）→ 重绘描述 */
+          render();
+        });
+
+        rowEl.addEventListener('dblclick', function() {
+          if (item.href) location.href = item.href;
+        });
+      })(it, row);
+
+      listEl.appendChild(row);
+    }
+  }
+
+  function select(el) {
+    if (selectedEl) selectedEl.classList.remove('selected');
+    selectedEl = el;
+    if (el) el.classList.add('selected');
+  }
+
+  /* ==========================================================
+     启动 + i18n
+     ========================================================== */
+  render();
+
+  if (window.i18n && window.i18n.ready) {
+    window.i18n.ready(function() { render(); });
+  }
+  document.addEventListener('i18n-ready', function() { render(); });
+})();
+</script>
+
+</body>
+</html>

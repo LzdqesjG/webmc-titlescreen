@@ -1,19 +1,34 @@
 # webmc-titlescreen
 
 用纯静态 HTML / CSS / JS 复刻《Minecraft》Java 版启动器的标题画面与相关界面
-（标题屏 / 选择世界 / 语言设置），包含原版像素字体、全景背景与 MC 风格按钮体系。
+（标题屏 / 选择世界 / 多人游戏 / 语言设置 / 开发者菜单），包含原版像素字体、全景背景与 MC 风格按钮体系。
 
 ## 目录结构
 
 ```
 website/
 ├── index.html        # 标题画面
-├── sstart.html       # 选择世界
+├── sstart.html       # 选择世界（单人）
+├── mstart.html       # 多人游戏（服务器列表）
+├── devmenu.html      # 开发者菜单（实验性，从服务器列表首条进入）
 ├── lang.html         # 语言设置
 ├── css/              # 样式（buttons / logos / realm / slider / textfield ...）
 ├── js/               # 交互脚本
 └── assets/           # 原版贴图 / 音效资源
 ```
+
+### 多人游戏 / 开发者菜单
+
+- `mstart.html` 以 `sstart.html` 为模板改写：结构、条目渲染、选中与搜索逻辑完全复用，仅替换文案与底部按钮
+  （Join Server / Direct Connect / Add Server / Edit / Delete / Refresh / Back）。
+- 服务器列表首条固定为 **「开发者模式 (实验性)」**，MOTD **「存在bug并不被动修复」**，带 `warning` 警示图标；
+  点击条目 / 箭头 / 警示图标都会进入 `devmenu.html`。
+- `devmenu.html` 是测试用导航页：上半区可打开项目内**每个**界面（标题屏 / 选择世界 / 多人游戏 / 语言设置），
+  下半区提供测试功能：UI 缩放循环（auto / 0.75 / 1.0 / 1.5 / 2.0，经 `sessionStorage` 持久化）、
+  查看当前语言、诊断信息（UA / 视口 / 缩放）、清空 localStorage、重载页面、退出/崩溃测试（复用 `exit.js`）。
+- 语言包新增 `multiplayer.*` 与 `devmenu.*` 键；服务器名与 MOTD 属数据，按原版习惯不参与翻译。
+- 新增 `dev_ui_scale` 为开发者菜单的缩放覆盖键（`sessionStorage`，不污染正常浏览）。
+
 ## 按钮：纯 CSS 无缝绘制
 
 按钮原先按每种尺寸各切一张贴图（20 / 71 / 98 / 150 / 200 × 20 共 16 张），体积冗余。

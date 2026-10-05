@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Play Multiplayer</title>
+
+<link rel="preload" as="image" href="assets/background/panorama_equirect.png">
+<link rel="preload" as="image" href="assets/background/panorama_0.png">
+<link rel="preload" as="image" href="assets/background/panorama_1.png">
+<link rel="preload" as="image" href="assets/background/panorama_2.png">
+<link rel="preload" as="image" href="assets/background/panorama_3.png">
+<link rel="preload" as="image" href="assets/background/panorama_4.png">
+<link rel="preload" as="image" href="assets/background/panorama_5.png">
+<link rel="preload" as="image" href="assets/background/menu_list_background.png">
+<link rel="preload" as="image" href="assets/icon/world_selection/unknown_server.png">
+<link rel="preload" as="audio" href="assets/sound/click.ogg">
+<link rel="preload" as="script" href="js/i18n.js">
+<link rel="stylesheet" href="css/main.css">
+<link rel="stylesheet" href="css/pano.css">
+<link rel="stylesheet" href="css/buttons.css">
+<link rel="stylesheet" href="css/textfield.css">
+<link rel="stylesheet" href="css/slider.css">
+<style>
+  html, body {
+    margin: 0; padding: 0;
+    width: 100%; height: 100%;
+    overflow: hidden;
+  }
+
+  body {
+    color: #fff;
+    font-family: 'Minecraft', monospace;
+    -webkit-font-smoothing: none;
+    font-smooth: never;
+    position: relative;
+  }
+
+  .world-screen {
+    position: fixed;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%) scale(var(--ui-scale, 1));
+    transform-origin: top center;
+    width:  calc(100vw / var(--ui-scale, 1));
+    height: calc(100vh / var(--ui-scale, 1));
+    display: flex;
+    flex-direction: column;
+    z-index: 1;
+    overflow: visible;
+  }
+
+  /* ============ Header ============ */
+  .world-header {
+    flex: 0 0 49px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    box-sizing: border-box;
+  }
+
+  .world-title {
+    font-family: 'Minecraft', monospace;
+    font-size: 20px;
+    line-height: 1;
+    color: #ffffff;
+    text-shadow: 1px 1px 0 #3f3f3f;
+    white-space: nowrap;
+    user-select: none;
+  }
+
+  .world-search-wrap { display: flex; justify-content: center; }
+  .world-search-wrap .mc-input { width: 200px; height: 20px; }
+
+  /* ============ Content ============ */
+  .world-content {
+    flex: 1 1 auto;
+    overflow-y: auto;
+    overflow-x: hidden;
+    background-image: url('assets/background/menu_list_background.png');
+    background-repeat: repeat;
+    background-size: 32px 32px;
+    image-rendering: pixelated;
+  }
+
+  /* 局域网扫描提示（多人页专有） */
+  .world-scan {
+    padding: 6px 8px 4px;
+    font-family: 'Minecraft', monospace;
+    font-size: 16px;
+    line-height: 1;
+    color: #909090;
+    text-shadow: 1px 1px 0 #1a1a1a;
+    user-select: none;
+  }
+
+  .world-list { display: flex; flex-direction: column; }
+
+  /* ============ 服务器条目 ============ */
+  .world-entry {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    height: 36px;
+    padding: 0 4px;
+    box-sizing: border-box;
+    cursor: pointer;
+    user-select: none;
+    gap: 4px;
+  }
+
+  .world-entry:hover { background: rgba(255, 255, 255, 0.08); }
+
+  .world-entry.selected {
+    background: rgba(255, 255, 255, 0.16);
+    box-shadow: inset 0 0 0 1px #ffffff;
+  }
+
+  /* ============ 图标 32×32 ============ */
+  .world-icon-wrap {
+    position: relative;
+    flex: 0 0 32px;
+    width: 32px;
+    height: 32px;
+  }
+
+  .world-icon {
+    position: absolute;
+    inset: 0;
+    background-image: url('assets/icon/world_selection/unknown_server.png');
+    background-size: 100% 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+    image-rendering: pixelated;
+  }
+
+  /* ============ 状态叠加 ============ */
+  .world-status {
+    position: absolute;
+    inset: 0;
+  }
+
+  .world-join {
+    position: absolute;
+    inset: 0;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 100% 100%;
+    image-rendering: pixelated;
+    display: none;
+    cursor: pointer;
+    z-index: 1;
+  }
+
+  .world-alert {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 16px;
+    height: 16px;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 100% 100%;
+    image-rendering: pixelated;
+    display: none;
+    cursor: pointer;
+    z-index: 2;
+  }
+
+  .world-alert[data-alert="warning"] {
+    display: block;
+    background-image: url('assets/icon/world_selection/warning.png');
+  }
+  .world-alert[data-alert="error"] {
+    display: block;
+    background-image: url('assets/icon/world_selection/error.png');
+  }
+
+  .world-alert[data-alert="warning"]:hover {
+    background-image: url('assets/icon/world_selection/warning_highlighted.png');
+  }
+  .world-alert[data-alert="error"]:hover {
+    background-image: url('assets/icon/world_selection/error_highlighted.png');
+  }
+
+  /* ============ 箭头显示 / 高亮 ============ */
+
+  .world-entry:hover .world-join,
+  .world-entry.selected .world-join {
+    display: block;
+  }
+
+  .world-entry:hover .world-join[data-join="join"],
+  .world-entry.selected .world-join[data-join="join"] {
+    background-image: url('assets/icon/world_selection/join.png');
+  }
+  .world-entry:hover .world-join[data-join="marked_join"],
+  .world-entry.selected .world-join[data-join="marked_join"] {
+    background-image: url('assets/icon/world_selection/marked_join.png');
+  }
+
+  .world-entry .world-join[data-join="join"]:hover {
+    background-image: url('assets/icon/world_selection/join_highlighted.png');
+  }
+  .world-entry .world-join[data-join="marked_join"]:hover {
+    background-image: url('assets/icon/world_selection/marked_join_highlighted.png');
+  }
+
+  /* ============ 文字区 ============ */
+  .world-info {
+    flex: 1 1 auto;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 2px;
+  }
+
+  .world-name {
+    font-family: 'Minecraft', monospace;
+    font-size: 20px;
+    line-height: 1;
+    color: #ffffff;
+    text-shadow: 1px 1px 0 #3f3f3f;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .world-meta {
+    font-family: 'Minecraft', monospace;
+    font-size: 16px;
+    line-height: 1;
+    color: #808080;
+    text-shadow: 1px 1px 0 #1a1a1a;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* ============ Footer ============ */
+  .world-footer {
+    flex: 0 0 60px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    box-sizing: border-box;
+  }
+
+  .footer-row {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+  }
+
+  #pano-cover { background: rgba(0, 0, 0, 0.35); }
+</style>
+
+<script src="js/exit.js"></script>
+</head>
+<body>
+
+<audio id="sfx-click" src="assets/sound/click.ogg" preload="auto"></audio>
+<script src="js/clicksound.js"></script>
+
+<canvas id="pano-canvas"></canvas>
+<div id="pano-css"></div>
+<div id="pano-cover"></div>
+
+<div class="world-screen">
+
+  <div class="world-header">
+    <div class="world-title" data-i18n="multiplayer.title">Play Multiplayer</div>
+    <div class="world-search-wrap">
+      <input class="mc-input" id="server-search" type="text"
+             data-i18n-placeholder="multiplayer.search" placeholder="Search...">
+    </div>
+  </div>
+
+  <div class="world-content mc-scroll">
+    <div class="world-scan" id="server-scan" data-i18n="multiplayer.scanning">Scanning for games on your local network</div>
+    <div class="world-list" id="server-list"></div>
+  </div>
+
+  <div class="world-footer">
+    <div class="footer-row">
+      <button class="mcbtn mcbtn-150" id="btn-join"     disabled data-i18n="multiplayer.join">Join Server</button>
+      <button class="mcbtn mcbtn-150" id="btn-direct"            data-i18n="multiplayer.direct">Direct Connect</button>
+    </div>
+    <div class="footer-row">
+      <button class="mcbtn mcbtn-71" id="btn-add"              data-i18n="multiplayer.add">Add Server</button>
+      <button class="mcbtn mcbtn-71" id="btn-edit"     disabled data-i18n="multiplayer.edit">Edit</button>
+      <button class="mcbtn mcbtn-71" id="btn-delete"   disabled data-i18n="multiplayer.delete">Delete</button>
+      <button class="mcbtn mcbtn-71" id="btn-refresh"           data-i18n="multiplayer.refresh">Refresh</button>
+      <a class="mcbtn mcbtn-71" id="btn-back" href="index.html" data-i18n="multiplayer.back">Back</a>
+    </div>
+  </div>
+
+</div>
+
+<script src="js/show_background.js"></script>
+<script src="js/uiscale.js"></script>
+<script src="js/i18n.js"></script>
+<script src="js/slider.js"></script>
+<script>
+(function() {
+  'use strict';
+
+  var DEFAULT_ICON = 'assets/icon/world_selection/unknown_server.png';
+
+  /* ==========================================================
+     服务器列表
+     ========================================================== */
+  var SERVERS = [
+    {
+      icon: DEFAULT_ICON,
+      name: '开发者模式 (实验性)',
+      description: '存在bug并不被动修复',
+      join: 'join',
+      alert: 'warning',
+      onJoin: function() { location.href = 'devmenu.html'; },
+      onAlertClick: function() { location.href = 'devmenu.html'; }
+    },
+    {
+      icon: DEFAULT_ICON,
+      name: 'Example Server',
+      description: 'A sample multiplayer server',
+      join: 'join',
+      onJoin: function() { console.log('[multiplayer] join Example Server'); }
+    },
+    {
+      icon: DEFAULT_ICON,
+      name: 'Local Test Server',
+      description: '127.0.0.1:25565 · Offline',
+      join: 'join',
+      alert: 'error',
+      onJoin: function() { console.log('[multiplayer] join Local Test Server'); }
+    }
+  ];
+
+  var listEl    = document.getElementById('server-list');
+  var searchBox = document.getElementById('server-search');
+  var btnJoin   = document.getElementById('btn-join');
+  var btnEdit   = document.getElementById('btn-edit');
+  var btnDelete = document.getElementById('btn-delete');
+  var btnRefresh= document.getElementById('btn-refresh');
+  var btnAdd    = document.getElementById('btn-add');
+  var btnDirect = document.getElementById('btn-direct');
+
+  function callHandle(server, name) {
+    if (!server) return;
+    var fn = server[name];
+    if (typeof fn === 'function') fn.call(server);
+  }
+
+  function getJoinHighlighted(server) {
+    return (server.join === 'marked_join')
+      ? 'assets/icon/world_selection/marked_join_highlighted.png'
+      : 'assets/icon/world_selection/join_highlighted.png';
+  }
+
+  /* ==========================================================
+     生成服务器条目
+     ========================================================== */
+  function createEntry(server) {
+    var el = document.createElement('div');
+    el.className = 'world-entry';
+
+    /* 图标 */
+    var iconWrap = document.createElement('div');
+    iconWrap.className = 'world-icon-wrap';
+
+    var iconEl = document.createElement('div');
+    iconEl.className = 'world-icon';
+    iconEl.style.backgroundImage =
+      'url("' + String(server.icon || DEFAULT_ICON).replace(/"/g, '\\"') + '")';
+    iconWrap.appendChild(iconEl);
+
+    /* 状态容器 */
+    var statusEl = document.createElement('div');
+    statusEl.className = 'world-status';
+
+    /* 箭头 */
+    var joinEl = document.createElement('div');
+    joinEl.className = 'world-join';
+    if (server.join) joinEl.dataset.join = server.join;
+
+    joinEl.addEventListener('click', function(e) {
+      e.stopPropagation();
+      setSelected(server);
+      if (server.alert === 'error') return;
+      callHandle(server, 'onJoin');
+    });
+
+    /* 警告 */
+    var alertEl = document.createElement('div');
+    alertEl.className = 'world-alert';
+    if (server.alert) alertEl.dataset.alert = server.alert;
+
+    alertEl.addEventListener('mouseenter', function() {
+      if (server.alert === 'error') return;
+      if (!server.join) return;
+      joinEl.style.backgroundImage = 'url("' + getJoinHighlighted(server) + '")';
+    });
+    alertEl.addEventListener('mouseleave', function() {
+      joinEl.style.backgroundImage = '';
+    });
+
+    alertEl.addEventListener('click', function(e) {
+      e.stopPropagation();
+      setSelected(server);
+      callHandle(server, 'onAlertClick');
+      if (server.alert === 'error') return;
+      callHandle(server, 'onJoin');
+    });
+
+    statusEl.appendChild(joinEl);
+    statusEl.appendChild(alertEl);
+    iconWrap.appendChild(statusEl);
+
+    /* 文字 */
+    var infoEl = document.createElement('div');
+    infoEl.className = 'world-info';
+
+    var nameEl = document.createElement('div');
+    nameEl.className = 'world-name';
+    nameEl.textContent = server.name || '';
+
+    var descEl = document.createElement('div');
+    descEl.className = 'world-meta';
+    descEl.textContent = server.description || '';
+
+    infoEl.appendChild(nameEl);
+    infoEl.appendChild(descEl);
+
+    el.appendChild(iconWrap);
+    el.appendChild(infoEl);
+
+    /* 单击选中 */
+    el.addEventListener('click', function() {
+      setSelected(server);
+    });
+
+    /* 双击进入 */
+    el.addEventListener('dblclick', function() {
+      setSelected(server);
+      if (server.alert === 'error') return;
+      callHandle(server, 'onJoin');
+    });
+
+    server._el = el;
+    return el;
+  }
+
+  function renderList() {
+    listEl.innerHTML = '';
+    for (var i = 0; i < SERVERS.length; i++) {
+      listEl.appendChild(createEntry(SERVERS[i]));
+    }
+    selected = null;
+    updateButtonState();
+  }
+
+  /* ==========================================================
+     选中状态
+     ========================================================== */
+  var selected = null;
+
+  function setSelected(server) {
+    selected = server || null;
+
+    for (var i = 0; i < SERVERS.length; i++) {
+      var s = SERVERS[i];
+      if (s._el) s._el.classList.toggle('selected', s === selected);
+    }
+    updateButtonState();
+  }
+
+  function updateButtonState() {
+    var active  = !!selected;
+    var isError = active && selected.alert === 'error';
+
+    btnJoin.disabled   = !active || isError;
+    btnEdit.disabled   = !active;
+    btnDelete.disabled = !active;
+  }
+
+  /* ==========================================================
+     搜索
+     ========================================================== */
+  function applyFilter(q) {
+    q = (q || '').trim().toLowerCase();
+    for (var i = 0; i < SERVERS.length; i++) {
+      var s = SERVERS[i];
+      if (!s._el) continue;
+      var hay = ((s.name || '') + ' ' + (s.description || '')).toLowerCase();
+      var hit = !q || hay.indexOf(q) >= 0;
+      s._el.style.display = hit ? '' : 'none';
+    }
+    setSelected(null);
+  }
+
+  /* ==========================================================
+     底部按钮
+     ========================================================== */
+  btnJoin.addEventListener('click', function() {
+    if (!selected) return;
+    if (selected.alert === 'error') return;
+    callHandle(selected, 'onJoin');
+  });
+
+  btnEdit.addEventListener('click', function() {
+    if (!selected) return;
+    callHandle(selected, 'onEdit');
+  });
+
+  btnDelete.addEventListener('click', function() {
+    if (!selected) return;
+    callHandle(selected, 'onDelete');
+  });
+
+  btnRefresh.addEventListener('click', function() {
+    console.log('[multiplayer] refresh server list');
+  });
+
+  btnAdd.addEventListener('click', function() {
+    console.log('[multiplayer] add server');
+  });
+
+  btnDirect.addEventListener('click', function() {
+    console.log('[multiplayer] direct connect');
+  });
+
+  searchBox.addEventListener('input', function() {
+    applyFilter(searchBox.value);
+  });
+
+  /* 启动 */
+  renderList();
+  updateButtonState();
+})();
+</script>
+
+</body>
+</html>
