@@ -9,8 +9,6 @@
   "menu.language": "语言",
   "menu.friends": "好友",
   "title.credits": "Copyright Mojang AB. Do not distribute!",
-  "splash.allow_js": "允许 JavaScript！",
-
   "selectWorld.title": "选择世界",
   "selectWorld.search": "搜索...",
   "selectWorld.play": "进入选中的世界",
@@ -24,13 +22,5 @@
   "options.language.search": "搜索...",
   "options.language.warning": "注意：部分语言尚未完全翻译",
   "options.font": "字体...",
-  "gui.done": "完成",
-  "selectWorld.title": "选择世界",
-"selectWorld.search": "搜索...",
-"selectWorld.play": "进入选中的世界",
-"selectWorld.create": "创建新的世界",
-"selectWorld.edit": "编辑",
-"selectWorld.delete": "删除",
-"selectWorld.recreate": "重建",
-"selectWorld.back": "返回"
+  "gui.done": "完成"
 }

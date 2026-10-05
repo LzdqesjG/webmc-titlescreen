@@ -9,7 +9,6 @@
   "menu.language": "Language",
   "menu.friends": "Friends",
   "title.credits": "Copyright Mojang AB. Do not distribute!",
-  "splash.allow_js": "Allow JavaScript!",
 
   "selectWorld.title": "Select World",
   "selectWorld.search": "Search...",
@@ -24,13 +23,5 @@
   "options.language.search": "Search...",
   "options.language.warning": "Note: Some languages are not fully translated",
   "options.font": "Font...",
-  "gui.done": "Done",
-  "selectWorld.title": "Select World",
-"selectWorld.search": "Search...",
-"selectWorld.play": "Play Selected World",
-"selectWorld.create": "Create New World",
-"selectWorld.edit": "Edit",
-"selectWorld.delete": "Delete",
-"selectWorld.recreate": "Recreate",
-"selectWorld.back": "Back"
+  "gui.done": "Done"
 }

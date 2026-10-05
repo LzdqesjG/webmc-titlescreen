@@ -1,4 +1,5 @@
 "use strict";
+//浏览器实在是没什么方法能退出页面了，我就只能用漏洞崩页面的方法退出了，这也没办法
 function parseVersion(v) {
   const parts = v.split(".").map(Number);
   return {
@@ -11,16 +12,11 @@ function parseVersion(v) {
 }
 function isVulnerable(vStr) {
   const v = parseVersion(vStr);
-  // Dev/Canary build (x.x.0.0): receives upstream fix early, considered safe
   if (v.isDevBuild) return false;
-  // major < 145 → definitely vulnerable
   if (v.major < 145) return true;
-  // major > 145 → patched
   if (v.major > 145) return false;
-  // major === 145: check build number
   if (v.build < 7632) return true;
   if (v.build > 7632) return false;
-  // build === 7632: check patch
   return v.patch < 75;
 }
 function exit(){
