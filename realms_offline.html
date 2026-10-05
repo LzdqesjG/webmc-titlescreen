@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Minecraft Realms</title>
+
+<link rel="preload" as="image" href="assets/background/panorama_equirect.png">
+<link rel="preload" as="image" href="assets/background/panorama_0.png">
+<link rel="preload" as="image" href="assets/background/panorama_1.png">
+<link rel="preload" as="image" href="assets/background/panorama_2.png">
+<link rel="preload" as="image" href="assets/background/panorama_3.png">
+<link rel="preload" as="image" href="assets/background/panorama_4.png">
+<link rel="preload" as="image" href="assets/background/panorama_5.png">
+<link rel="preload" as="image" href="assets/background/menu_list_background.png">
+<link rel="preload" as="audio" href="assets/sound/click.ogg">
+<link rel="preload" as="script" href="js/i18n.js">
+<link rel="stylesheet" href="css/main.css">
+<link rel="stylesheet" href="css/pano.css">
+<link rel="stylesheet" href="css/buttons.css">
+<link rel="stylesheet" href="css/slider.css">
+<style>
+  html, body {
+    margin: 0; padding: 0;
+    width: 100%; height: 100%;
+    overflow: hidden;
+  }
+
+  body {
+    color: #fff;
+    font-family: 'Minecraft', monospace;
+    -webkit-font-smoothing: none;
+    font-smooth: never;
+    position: relative;
+  }
+
+  .world-screen {
+    position: fixed;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%) scale(var(--ui-scale, 1));
+    transform-origin: top center;
+    width:  calc(100vw / var(--ui-scale, 1));
+    height: calc(100vh / var(--ui-scale, 1));
+    display: flex;
+    flex-direction: column;
+    z-index: 1;
+    overflow: visible;
+  }
+
+  /* ============ Header ============ */
+  .world-header {
+    flex: 0 0 49px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    box-sizing: border-box;
+  }
+
+  .world-title {
+    font-family: 'Minecraft', monospace;
+    font-size: 20px;
+    line-height: 1;
+    color: #ffffff;
+    text-shadow: 1px 1px 0 #3f3f3f;
+    white-space: nowrap;
+    user-select: none;
+  }
+
+  /* ============ Content ============ */
+  .world-content {
+    flex: 1 1 auto;
+    overflow-y: auto;
+    overflow-x: hidden;
+    background-image: url('assets/background/menu_list_background.png');
+    background-repeat: repeat;
+    background-size: 32px 32px;
+    image-rendering: pixelated;
+  }
+
+  /* ============ 错误信息 ============ */
+  .realms-msg {
+    padding: 40px 16px 8px;
+    text-align: center;
+    user-select: none;
+  }
+
+  .realms-msg-title {
+    font-family: 'Minecraft', monospace;
+    font-size: 18px;
+    line-height: 1.4;
+    color: #ff5555;
+    text-shadow: 1px 1px 0 #1a1a1a;
+    margin-bottom: 10px;
+  }
+
+  .realms-msg-body {
+    font-family: 'Minecraft', monospace;
+    font-size: 16px;
+    line-height: 1.5;
+    color: #a0a0a0;
+    text-shadow: 1px 1px 0 #1a1a1a;
+  }
+
+  /* ============ Footer ============ */
+  .world-footer {
+    flex: 0 0 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    box-sizing: border-box;
+  }
+
+  .footer-row {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+  }
+
+  #pano-cover { background: rgba(0, 0, 0, 0.35); }
+</style>
+
+<script src="js/exit.js"></script>
+</head>
+<body>
+
+<audio id="sfx-click" src="assets/sound/click.ogg" preload="auto"></audio>
+<script src="js/clicksound.js"></script>
+
+<canvas id="pano-canvas"></canvas>
+<div id="pano-css"></div>
+<div id="pano-cover"></div>
+
+<div class="world-screen">
+
+  <div class="world-header">
+    <div class="world-title" data-i18n="realms.title">Minecraft Realms</div>
+  </div>
+
+  <div class="world-content mc-scroll">
+    <div class="realms-msg">
+      <div class="realms-msg-title" data-i18n="realms.offline.error">Failed to load Realms</div>
+      <div class="realms-msg-body" data-i18n="realms.offline.detail">You are not logged in to a Microsoft account.</div>
+    </div>
+  </div>
+
+  <div class="world-footer">
+    <div class="footer-row">
+      <button class="mcbtn mcbtn-150" id="btn-retry" data-i18n="realms.retry">Retry</button>
+      <a class="mcbtn mcbtn-150" id="btn-back" href="index.html" data-i18n="realms.back">Back</a>
+    </div>
+  </div>
+
+</div>
+
+<script src="js/show_background.js"></script>
+<script src="js/uiscale.js"></script>
+<script src="js/i18n.js"></script>
+<script src="js/slider.js"></script>
+<script>
+(function() {
+  'use strict';
+
+  /* 离线（盗版）玩家：Realms 加载失败，重试即重新加载本页 */
+  document.getElementById('btn-retry').addEventListener('click', function() {
+    console.log('[realms] retry (offline)');
+    location.reload();
+  });
+})();
+</script>
+
+</body>
+</html>

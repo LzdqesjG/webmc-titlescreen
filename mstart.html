@@ -85,15 +85,33 @@
     image-rendering: pixelated;
   }
 
-  /* 局域网扫描提示（多人页专有） */
+  /* 局域网扫描提示（多人页专有，位于服务器列表下方居中） */
   .world-scan {
-    padding: 6px 8px 4px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 8px 8px;
     font-family: 'Minecraft', monospace;
-    font-size: 16px;
     line-height: 1;
     color: #909090;
     text-shadow: 1px 1px 0 #1a1a1a;
     user-select: none;
+  }
+
+  /* 逐帧动画：Ooo → oOo → ooO → oOo（每 0.4s 一格） */
+  .world-scan-anim {
+    font-size: 16px;
+    letter-spacing: 1px;
+    white-space: pre;
+    color: #909090;
+  }
+
+  .world-scan-text {
+    margin-top: 6px;
+    font-size: 16px;
+    text-align: center;
+    color: #909090;
   }
 
   .world-list { display: flex; flex-direction: column; }
@@ -282,8 +300,11 @@
   </div>
 
   <div class="world-content mc-scroll">
-    <div class="world-scan" id="server-scan" data-i18n="multiplayer.scanning">Scanning for games on your local network</div>
     <div class="world-list" id="server-list"></div>
+    <div class="world-scan" id="server-scan">
+      <div class="world-scan-anim" id="server-scan-anim">Ooo</div>
+      <div class="world-scan-text" data-i18n="multiplayer.scanning">Scanning for games on your local network</div>
+    </div>
   </div>
 
   <div class="world-footer">
@@ -538,6 +559,21 @@
   searchBox.addEventListener('input', function() {
     applyFilter(searchBox.value);
   });
+
+  /* ==========================================================
+     局域网扫描动画
+     Ooo → oOo → ooO → oOo，每 0.4s 切换一格
+     ========================================================== */
+  var SCAN_FRAMES = ['Ooo', 'oOo', 'ooO', 'oOo'];
+  var scanAnimEl  = document.getElementById('server-scan-anim');
+  if (scanAnimEl) {
+    var scanFrame = 0;
+    scanAnimEl.textContent = SCAN_FRAMES[0];
+    setInterval(function() {
+      scanFrame = (scanFrame + 1) % SCAN_FRAMES.length;
+      scanAnimEl.textContent = SCAN_FRAMES[scanFrame];
+    }, 400);
+  }
 
   /* 启动 */
   renderList();
