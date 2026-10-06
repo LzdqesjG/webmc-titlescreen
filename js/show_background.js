@@ -9,9 +9,17 @@
     pz: 'assets/background/panorama_2.png',
     nz: 'assets/background/panorama_0.png',
   };
-  const FOV = 70 * Math.PI / 180;
-  const tanHalfFov = Math.tan(FOV / 2);
-  const SPEED = -2 * Math.PI / (300 * 1000);
+const FOV = 70 * Math.PI / 180;
+const tanHalfFov = Math.tan(FOV / 2);
+const BASE_SPEED = -2 * Math.PI / (300 * 1000);
+
+/* 全景速度倍率（可被 accessibility 设置改变） */
+let panoramaSpeed = (typeof window.mcPanoramaSpeed === 'number') ? window.mcPanoramaSpeed : 1;
+document.addEventListener('mc-option-change', function(e) {
+  if (e.detail.key === 'options.accessibility.panorama_speed') {
+    panoramaSpeed = e.detail.value;
+  }
+});
 
   const canvas  = document.getElementById('pano-canvas');
   const cssPano = document.getElementById('pano-css');
@@ -233,7 +241,7 @@
 
       const dt = t - lastT;
       lastT = t;
-      angle += SPEED * dt;
+angle += BASE_SPEED * panoramaSpeed * dt;
       updateRot();
       resize();
       draw();

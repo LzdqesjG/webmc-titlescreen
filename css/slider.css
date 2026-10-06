@@ -107,3 +107,13 @@
 .mc-scroll::-webkit-scrollbar-corner {
   background: transparent;
 }
+/* ============ 310×20 整行 Slider（对应源码 addBig） ============ */
+.mc-slider-310 {
+  width: 310px;
+}
+.mc-slider-310 .mc-slider-track {
+  background-image: url('../assets/slider/slider_310.png');
+}
+.mc-slider-310:focus .mc-slider-track {
+  background-image: url('../assets/slider/slider_highlighted_310.png');
+}

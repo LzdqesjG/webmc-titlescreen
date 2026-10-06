@@ -14,8 +14,8 @@
 <link rel="preload" as="image" href="assets/background/panorama_5.png">
 <link rel="preload" as="image" href="assets/background/menu_list_background.png">
 <link rel="preload" as="audio" href="assets/sound/click.ogg">
-
 <link rel="stylesheet" href="css/main.css">
+<script src="js/font.js"></script>
 <link rel="stylesheet" href="css/pano.css">
 <link rel="stylesheet" href="css/buttons.css">
 <link rel="stylesheet" href="css/textfield.css">
@@ -115,7 +115,7 @@
   #pano-cover { background: rgba(0, 0, 0, 0.35); }
 </style>
 
-<script src="js/exit.js"></script>
+
 </head>
 <body>
 
@@ -142,17 +142,21 @@
   <div class="lang-footer">
     <div class="lang-warning" data-i18n="options.languageAccuracyWarning">Note: Some languages are not fully translated</div>
     <div class="lang-bottom-buttons">
-      <button class="mcbtn mcbtn-150" id="btn-font" data-i18n="options.font">Font...</button>
-      <button class="mcbtn mcbtn-150" id="btn-done" data-i18n="gui.done">Done</button>
+
+
+<!-- 之后 -->
+<a class="mcbtn mcbtn-150" id="btn-font" href="font.html" data-i18n="options.font">Font...</a>
+      <button class="mcbtn mcbtn-150 noback" id="btn-done" data-i18n="gui.done">Done</button>
     </div>
   </div>
 
 </div>
-
+<script src="js/apply_option.js"></script>
+<script src="js/option.js"></script>
 <script src="js/show_background.js"></script>
 <script src="js/uiscale.js"></script>
 <script src="js/i18n.js"></script>
-
+<script src="js/btn_back.js"></script>
 <script>
 (function() {
   'use strict';
@@ -215,12 +219,19 @@
     selected = el;
   }
 
-  function applySelection() {
-    if (selected && selected.dataset.code && window.i18n) {
-      window.i18n.setLang(selected.dataset.code);
-    }
+function applySelection() {
+  /* 1. 先应用选中的语言 */
+  if (selected && selected.dataset.code && window.i18n) {
+    window.i18n.setLang(selected.dataset.code);
+  }
+
+  /* 2. 从栈里 pop 上一页；栈空时兜底回 index.html */
+  if (window.mcBack && window.mcBack.back) {
+    window.mcBack.back('index.html');
+  } else {
     location.href = 'index.html';
   }
+}
 
   searchBox.addEventListener('input', function() {
     render(searchBox.value);
@@ -230,9 +241,7 @@
     applySelection();
   });
 
-  btnFont.addEventListener('click', function() {
-    console.log('[lang] Font options (not implemented)');
-  });
+
 
   window.i18n.ready(function() {
     currentLang = window.i18n.getLang();
@@ -242,6 +251,6 @@
   });
 })();
 </script>
-
+<script src="js/narrator.js"></script>
 </body>
 </html>

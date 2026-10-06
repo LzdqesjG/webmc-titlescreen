@@ -69,13 +69,7 @@
       dragging = false;
       el.classList.remove('dragging');
 
-      /* 源码 onRelease 播一次音效 */
-      var sfx = document.getElementById('sfx-click');
-      if (sfx) {
-        var a = sfx.cloneNode();
-        a.volume = 0.7;
-        a.play().catch(function(){});
-      }
+if (window.mcPlayClick) window.mcPlayClick();
     });
 
     /* --- 触摸 --- */
@@ -97,12 +91,7 @@
       el.classList.remove('dragging');
 
       /* 源码 onRelease 播一次音效 */
-      var sfx = document.getElementById('sfx-click');
-      if (sfx) {
-        var a = sfx.cloneNode();
-        a.volume = 0.7;
-        a.play().catch(function(){});
-      }
+if (window.mcPlayClick) window.mcPlayClick();
     });
 
     window.addEventListener('resize', updateHandlePosition);

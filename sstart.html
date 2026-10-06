@@ -17,6 +17,7 @@
 <link rel="preload" as="audio" href="assets/sound/click.ogg">
 
 <link rel="stylesheet" href="css/main.css">
+<script src="js/font.js"></script>
 <link rel="stylesheet" href="css/pano.css">
 <link rel="stylesheet" href="css/buttons.css">
 <link rel="stylesheet" href="css/textfield.css">
@@ -136,16 +137,17 @@
       <button class="mcbtn mcbtn-71" id="btn-edit"     disabled data-i18n="selectWorld.edit">Edit</button>
       <button class="mcbtn mcbtn-71" id="btn-delete"   disabled data-i18n="selectWorld.delete">Delete</button>
       <button class="mcbtn mcbtn-71" id="btn-recreate" disabled data-i18n="selectWorld.recreate">Recreate</button>
-      <a class="mcbtn mcbtn-71" id="btn-back" href="index.html" data-i18n="gui.back">Back</a>
+      <a class="mcbtn mcbtn-71 btn-back" id="btn-back" href="index.html" data-i18n="gui.back">Back</a>
     </div>
   </div>
 
 </div>
-
+<script src="js/apply_option.js"></script>
+<script src="js/option.js"></script>
 <script src="js/show_background.js"></script>
 <script src="js/uiscale.js"></script>
 <script src="js/i18n.js"></script>
-
+<script src="js/btn_back.js"></script>
 <script>
 (function() {
   'use strict';
@@ -165,59 +167,7 @@
        handle      onJoin / onEdit / onDelete / onRecreate / onAlertClick
      ========================================================== */
   var WORLDS = [
-    {
-      name: 'New World',
-      folder: 'New World',
-      lastPlayed: '2025-01-15',
-      info: 'Survival',
-      join: 'join',
-      onJoin:     function() { alert('join: ' + this.name); },
-      onEdit:     function() { console.log('edit:', this.name); },
-      onDelete:   function() { console.log('delete:', this.name); },
-      onRecreate: function() { console.log('recreate:', this.name); }
-    },
-    {
-      name: 'My Survival',
-      folder: 'My Survival',
-      lastPlayed: '2025-02-03',
-      info: 'Survival',
-      join: 'marked_join',
-      onJoin:     function() { alert('join: ' + this.name); },
-      onEdit:     function() { console.log('edit:', this.name); },
-      onDelete:   function() { console.log('delete:', this.name); },
-      onRecreate: function() { console.log('recreate:', this.name); }
-    },
-    {
-      name: 'Creative Build',
-      folder: 'Creative Build',
-      lastPlayed: '2025-03-01',
-      info: 'Creative',
-      join: 'join',
-      alert: 'warning',
-      onJoin:       function() { alert('join: ' + this.name); },
-      onEdit:       function() { console.log('edit:', this.name); },
-      onDelete:     function() { console.log('delete:', this.name); },
-      onRecreate:   function() { console.log('recreate:', this.name); },
-      onAlertClick: function() { console.log('warning:', this.name); }
-    },
-    {
-      name: 'Hardcore Run',
-      folder: 'Hardcore Run',
-      lastPlayed: '2025-03-10',
-      info: 'Hardcore',
-      join: 'marked_join',
-      alert: 'warning',
-      onAlertClick: function() { console.log('warning:', this.name); }
-    },
-    {
-      name: 'Broken World',
-      folder: 'Broken World',
-      lastPlayed: '2024-12-01',
-      info: '???',
-      alert: 'error',
-      onDelete:     function() { console.log('delete:', this.name); },
-      onAlertClick: function() { console.log('error:', this.name); }
-    }
+
   ];
 
   var listEl      = document.getElementById('world-list');
@@ -426,6 +376,6 @@
   }
 })();
 </script>
-
+<script src="js/narrator.js"></script>
 </body>
 </html>

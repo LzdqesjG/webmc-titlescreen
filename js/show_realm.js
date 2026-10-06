@@ -14,7 +14,6 @@
   function delCookie(name) {
     document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/';
   }
-
   /* ============ 元素引用 ============ */
   var newsEl   = document.getElementById('realms-news');
   var inviteEl = document.getElementById('realms-invite');

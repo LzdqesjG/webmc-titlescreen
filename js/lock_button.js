@@ -2,16 +2,20 @@
   'use strict';
 
   /* ==========================================================
-     Lock Button
-     点击切换 data-state（unlocked ↔ locked）
-     派发 'lockchange' 事件，detail.locked = boolean
+     Lock Icon Button
+     源码：LockIconButton.onPress → setLocked(!locked)
+     - 派发 'lockchange' 事件，detail.locked = boolean
      ========================================================== */
   document.addEventListener('click', function(e) {
-    var btn = e.target && e.target.closest && e.target.closest('.mc-lock-btn');
+    var btn = e.target && e.target.closest
+      ? e.target.closest('.mc-lock-btn')
+      : null;
     if (!btn || btn.disabled) return;
 
     var locked = btn.dataset.state === 'locked';
     btn.dataset.state = locked ? 'unlocked' : 'locked';
+
+    try { btn.focus(); } catch (e) {}
 
     btn.dispatchEvent(new CustomEvent('lockchange', {
       bubbles: true,
@@ -20,7 +24,7 @@
   }, true);
 
   /* ==========================================================
-     工具：查询 / 设置状态（合并到全局 mcWidgets）
+     工具
      ========================================================== */
   window.mcWidgets = window.mcWidgets || {};
 

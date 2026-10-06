@@ -71,3 +71,41 @@ body {
   transform: scale(var(--ui-scale, 1));
   will-change: transform;
 }
+/* ==========================================================
+   highContrast 高对比度主题
+   ========================================================== */
+
+/* 按钮：加白边框 */
+html.hc .mcbtn {
+  outline: 1px solid #ffffff;
+  outline-offset: -1px;
+}
+html.hc .mcbtn:disabled {
+  outline-color: #808080;
+}
+
+/* 列表条目：选中时反色 */
+html.hc .mc-list-entry.selected {
+  background-color: #ffffff;
+  color: #000000;
+  text-shadow: none;
+}
+
+/* Slider 轨道：白边框 */
+html.hc .mc-slider .mc-slider-track {
+  outline: 1px solid #ffffff;
+  outline-offset: -1px;
+}
+
+/* Slider 值文本反色 */
+html.hc .mc-slider .acc-slider-label,
+html.hc .acc-slider-label {
+  color: #ffffff;
+  text-shadow: 1px 1px 0 #000000, -1px -1px 0 #000000;
+}
+
+/* 输入框：白边框 */
+html.hc .mc-input {
+  outline: 1px solid #ffffff;
+  outline-offset: -1px;
+}

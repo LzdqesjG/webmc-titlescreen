@@ -27,16 +27,18 @@
 </style>
 
 <link rel="stylesheet" href="css/main.css">
+<script src="js/font.js"></script>
 <link rel="stylesheet" href="css/pano.css">
 <link rel="stylesheet" href="css/buttons.css">
 <link rel="stylesheet" href="css/realm.css">
 <link rel="stylesheet" href="css/logos.css">
+<link rel="stylesheet" href="css/index.css">
 <script src="js/exit.js"></script>
 </head>
 <body>
 
 <audio id="sfx-click" src="assets/sound/click.ogg" preload="auto"></audio>
-<script src="js/clicksound.js"></script>
+
 
 <canvas id="pano-canvas"></canvas>
 <div id="pano-css"></div>
@@ -46,13 +48,13 @@
   <div class="logo">
     <img class="logo-minecraft" id="logo-img" src="assets/logo/minceraft_small.png" alt="Minecraft">
     <img class="logo-edition" src="assets/logo/edition_small.png" alt="Edition">
-  </div>
+</div> 
 
-  <div class="menu">
+
     <a href="sstart.html" class="mcbtn mcbtn-long" id="sstart" data-i18n="menu.singleplayer">Singleplayer</a>
     <button class="mcbtn mcbtn-long" id="mstart" data-i18n="menu.multiplayer">Multiplayer</button>
 
-    <button class="mcbtn mcbtn-long" id="realms" disabled>
+    <button class="mcbtn mcbtn-long" id="realms">
       <span data-i18n="menu.online">Minecraft Realms</span>
       <span class="realms-notifications" aria-hidden="true">
         <img class="realms-notif" id="realms-news"   src="assets/icon/news_notification_mainscreen.png" alt="">
@@ -60,29 +62,34 @@
         <img class="realms-notif" id="realms-trial"  src="assets/icon/realms_trial_on.png" alt="">
       </span>
     </button>
-
-    <div class="icon-row">
-      <button class="mcbtn mcbtn-icon" disabled title="Friends"><img src="assets/icon/friends.png" alt="Friends"></button>
+<button class="mcbtn mcbtn-icon" id="friends" title="Friends">
+  <img src="assets/icon/friends.png" alt="Friends">
+</button>
       <a class="mcbtn mcbtn-icon" id="lang" href="lang.html" title="Language"><img src="assets/icon/language.png" alt="Language"></a>
-      <button class="mcbtn mcbtn-icon" id="accessibility" title="Accessibility"><img src="assets/icon/accessibility.png" alt="Accessibility"></button>
-    </div>
 
-    <div class="bottom-row">
-      <button class="mcbtn mcbtn-half" id="option" data-i18n="menu.options">Options...</button>
+<a class="mcbtn mcbtn-icon" id="accessibility" href="accessibility.html" title="Accessibility">
+  <img src="assets/icon/accessibility.png" alt="Accessibility">
+</a>
+   
+
+      <a href="options.html" class="mcbtn mcbtn-half" id="option" data-i18n="menu.options">Options...</a>
       <button class="mcbtn mcbtn-half" id="exit" onclick="exit()" data-i18n="menu.quit">Quit Game</button>
-    </div>
-  </div>
-</div>
+   
+
 
 <div class="version-text">Minecraft 26.2</div>
-<button class="copyright-text" data-i18n="title.credits">Copyright Mojang AB. Do not distribute!</button>
-
+<a class="copyright-text" href="credits.html" data-i18n="title.credits">Copyright Mojang AB. Do not distribute!</a>
+<script src="js/apply_option.js"></script>
+<script src="js/option.js"></script>
 <script src="js/show_background.js"></script>
 <script src="js/show_minecraft.js"></script>
 <script src="js/show_realm.js"></script>
 <script src="js/show_splash.js"></script>
 <script src="js/uiscale.js"></script>
 <script src="js/i18n.js"></script>
+<script src="js/btn_back.js"></script>
+<script src="js/narrator.js"></script>
+<script src="js/clicksound.js"></script>
 
 </body>
 </html>
