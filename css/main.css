@@ -35,14 +35,39 @@ body {
   position: relative;
 }
 
-/* ============ 需要可选中的区域（#3） ============
-   全局默认禁止选中以模拟游戏 UI，个别需要复制/选中的区域
-   在此显式放开，避免被 body 的 user-select:none 波及。
-   局域网扫描块（multiplayer）允许用户选中其中的文字。 */
-.world-scan,
-.world-scan-text,
-.world-scan-anim {
-  -webkit-user-select: text;
-  user-select: text;
+.version-text {
+  position: absolute;
+  left: calc(2px * var(--ui-scale, 1));
+  bottom: 0;
+  height: 10px;
+  line-height: 10px;
+  font-family: 'Minecraft', monospace;
+  font-size: 10px;
+  color: #fff;
+  text-shadow: 1px 1px 0 #3f3f3f;
+  pointer-events: none;
+  white-space: nowrap;
+
+  transform-origin: left bottom;
+  transform: scale(var(--ui-scale, 1));
+  will-change: transform;
 }
 
+.copyright-text {
+  position: absolute;
+  right: calc(2px * var(--ui-scale, 1));
+  bottom: 0;
+  height: 10px;
+  line-height: 10px;
+  font-family: 'Minecraft', monospace;
+  font-size: 10px;
+  color: #fff;
+  text-shadow: 1px 1px 0 #3f3f3f;
+  cursor: pointer;
+  white-space: nowrap;
+  background: none; border: none; padding: 0;
+
+  transform-origin: right bottom;
+  transform: scale(var(--ui-scale, 1));
+  will-change: transform;
+}

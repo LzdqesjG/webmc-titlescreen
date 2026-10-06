@@ -1,72 +1,12 @@
-/* ==========================================================
-   菜单布局 —— Logo + 按钮 + 整体缩放
-   ========================================================== */
-
-/* ============ 内容容器（整体缩放） ============ */
-.screen {
-  position: absolute;
-  top: 25%;
-  left: 50%;
-  margin-top: calc(-22px * var(--ui-scale, 1));
-  transform: translateX(-50%) scale(var(--ui-scale, 1));
-  transform-origin: center top;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  will-change: transform;
-}
-
-/* ============ Logo ============ */
-.logo {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-bottom: 26px;
-  position: relative;
-}
-
-/* minecraft.png 256×64 → 只显示顶部 44px（原版 blit 的高度） */
-.logo-minecraft {
-  width: 256px;
-  height: 44px;
-  object-fit: cover;
-  object-position: top;
-  image-rendering: pixelated;
-  display: block;
-  /* 下方没有 margin，让 edition 贴上来 */
-}
-
-/* edition.png 128×16 → 紧贴 logo 底边 */
-.logo-edition {
-  width: 128px;
-  height: 16px;
-  image-rendering: pixelated;
-  display: block;
-  /* 没有 margin-top，紧贴 */
-}
-
-/* ============ 菜单列 ============ */
-.menu {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-}
-
 /* ============ 按钮通用 ============ */
 .mcbtn {
-  /* 无缝方案：
-     原先用 border-image 做 9-slice，但 border-image 会把图「切成 9 块
-     分别绘制」，而父级 .screen 的 scale(--ui-scale) 恒为小数，
-     切片边界被抗锯齿错位、露出页面背景 → 就是那条白线（缩放越大越明显）。
-     现在改为「同一元素直接绘制」：1px 黑描边 + 1px 内斜面 + 纯色填充，
-     颜色直接取自原贴图，任意尺寸 / 任意缩放下都不会有接缝。 */
-  box-sizing: border-box;
-  border: 1px solid #000000;
-  background-color: #6f6f6f;
-  box-shadow: inset 1px 1px 0 #aaaaaa, inset -1px -1px 0 #565656;
-  padding: 0;
+  border: none;
+  padding: 0 2px;              /* ← 源码 TEXT_MARGIN = 2 */
   cursor: pointer;
+  background: none;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 100% 100%;
   image-rendering: pixelated;
   font-family: 'Minecraft', monospace;
   color: #ffffff;
@@ -75,7 +15,7 @@
   align-items: center;
   justify-content: center;
   text-decoration: none;
-
+  box-sizing: border-box;
 }
 
 .mcbtn:focus,
@@ -85,10 +25,47 @@
   -webkit-tap-highlight-color: transparent;
 }
 
-/* ============ 尺寸（仅尺寸不同；描边/填充由 .mcbtn 统一绘制） ============ */
-.mcbtn-long { width: 200px; height: 20px; }
-.mcbtn-half { width:  98px; height: 20px; }
-.mcbtn-icon { width:  20px; height: 20px; }
+/* ============ 200×20 长按钮 ============ */
+.mcbtn-long {
+  width: 200px;
+  height: 20px;
+  background-image: url('../assets/button/button.png');
+}
+.mcbtn-long:hover:not(:disabled),
+.mcbtn-long:focus:not(:disabled) {           /* ← 加 :focus，源码 isHoveredOrFocused() */
+  background-image: url('../assets/button/button_highlighted.png');
+}
+.mcbtn-long:disabled {
+  background-image: url('../assets/button/button_disabled.png');
+}
+
+/* ============ 98×20 半宽按钮 ============ */
+.mcbtn-half {
+  width: 98px;
+  height: 20px;
+  background-image: url('../assets/button/button_98.png');
+}
+.mcbtn-half:hover:not(:disabled),
+.mcbtn-half:focus:not(:disabled) {
+  background-image: url('../assets/button/button_highlighted_98.png');
+}
+.mcbtn-half:disabled {
+  background-image: url('../assets/button/button_disabled_98.png');
+}
+
+/* ============ 20×20 图标按钮 ============ */
+.mcbtn-icon {
+  width: 20px;
+  height: 20px;
+  background-image: url('../assets/button/button_20.png');
+}
+.mcbtn-icon:hover:not(:disabled),
+.mcbtn-icon:focus:not(:disabled) {
+  background-image: url('../assets/button/button_highlighted_20.png');
+}
+.mcbtn-icon:disabled {
+  background-image: url('../assets/button/button_disabled_20.png');
+}
 .mcbtn-icon img {
   width: 14px;
   height: 14px;
@@ -99,7 +76,7 @@
 /* ============ 禁用态 ============ */
 .mcbtn:disabled {
   cursor: not-allowed;
-  color: #a0a0a0;
+  color: #a0a0a0;              /* -6250336 = #A0A0A0 */
   text-shadow: 1px 1px 0 #282828;
 }
 .mcbtn-icon:disabled img {
@@ -118,35 +95,39 @@
   justify-content: center;
   gap: 4px;
 }
+
 /* ==========================================================
-   Select World 屏幕专用按钮尺寸
+   Select World 专用尺寸
    ========================================================== */
 
-/* --- 71×20（Edit / Delete / Recreate / Back） --- */
-.mcbtn-71  { width: 71px;  height: 20px; }
-
-/* --- 150×20（Play Selected World / Create New World，跨 2 列） --- */
-.mcbtn-150 { width: 150px; height: 20px; }
-
-/* --- 100×20（多人页第一行 / Realms 页全部按钮） --- */
-.mcbtn-100 { width: 100px; height: 20px; }
-
-/* --- 74×20（多人页第二行） --- */
-.mcbtn-74  { width:  74px; height: 20px; }
-
-/* ============ 交互态：只切换描边 / 填充 / 斜面颜色 ============ */
-.mcbtn:hover:not(:disabled) {
-  border-color: #ffffff;
-  background-color: #757575;
-  box-shadow: inset 1px 1px 0 #afafaf, inset -1px -1px 0 #5c5c5c;
+.mcbtn-71 {
+  width: 71px;
+  height: 20px;
+  background-image: url('../assets/button/button_71.png');
 }
-.mcbtn:disabled {
-  border-color: #000000;
-  background-color: #2c2c2c;
-  box-shadow: none;
+.mcbtn-71:hover:not(:disabled),
+.mcbtn-71:focus:not(:disabled) {
+  background-image: url('../assets/button/button_highlighted_71.png');
 }
+.mcbtn-71:disabled {
+  background-image: url('../assets/button/button_disabled_71.png');
+}
+
+.mcbtn-150 {
+  width: 150px;
+  height: 20px;
+  background-image: url('../assets/button/button_150.png');
+}
+.mcbtn-150:hover:not(:disabled),
+.mcbtn-150:focus:not(:disabled) {
+  background-image: url('../assets/button/button_highlighted_150.png');
+}
+.mcbtn-150:disabled {
+  background-image: url('../assets/button/button_disabled_150.png');
+}
+
 /* ==========================================================
-   Lock Button（20×20，锁定/解锁 切换按钮）
+   Lock Button
    ========================================================== */
 .mc-lock-btn {
   width: 20px;
@@ -165,22 +146,22 @@
   outline: none;
 }
 
-/* 解锁态（默认） */
 .mc-lock-btn[data-state="unlocked"] {
   background-image: url('../assets/button/unlocked_button.png');
 }
-.mc-lock-btn[data-state="unlocked"]:hover:not(:disabled) {
+.mc-lock-btn[data-state="unlocked"]:hover:not(:disabled),
+.mc-lock-btn[data-state="unlocked"]:focus:not(:disabled) {
   background-image: url('../assets/button/unlocked_button_highlighted.png');
 }
 .mc-lock-btn[data-state="unlocked"]:disabled {
   background-image: url('../assets/button/unlocked_button_disabled.png');
 }
 
-/* 锁定态 */
 .mc-lock-btn[data-state="locked"] {
   background-image: url('../assets/button/locked_button.png');
 }
-.mc-lock-btn[data-state="locked"]:hover:not(:disabled) {
+.mc-lock-btn[data-state="locked"]:hover:not(:disabled),
+.mc-lock-btn[data-state="locked"]:focus:not(:disabled) {
   background-image: url('../assets/button/locked_button_highlighted.png');
 }
 .mc-lock-btn[data-state="locked"]:disabled {
@@ -192,7 +173,7 @@
 }
 
 /* ==========================================================
-   Checkbox（20×20，勾选/未勾选 切换按钮）
+   Checkbox
    ========================================================== */
 .mc-checkbox {
   width: 20px;
@@ -211,27 +192,22 @@
   outline: none;
 }
 
-/* 未勾选 */
 .mc-checkbox[data-checked="false"] {
   background-image: url('../assets/button/checkbox.png');
 }
-.mc-checkbox[data-checked="false"]:hover:not(:disabled) {
+.mc-checkbox[data-checked="false"]:hover:not(:disabled),
+.mc-checkbox[data-checked="false"]:focus:not(:disabled) {
   background-image: url('../assets/button/checkbox_highlighted.png');
 }
 
-/* 已勾选 */
 .mc-checkbox[data-checked="true"] {
   background-image: url('../assets/button/checkbox_selected.png');
 }
-.mc-checkbox[data-checked="true"]:hover:not(:disabled) {
+.mc-checkbox[data-checked="true"]:hover:not(:disabled),
+.mc-checkbox[data-checked="true"]:focus:not(:disabled) {
   background-image: url('../assets/button/checkbox_selected_highlighted.png');
 }
 
-
-
-/* ==========================================================
-   Checkbox + 标签 的组合容器（可选）
-   ========================================================== */
 .mc-checkbox-row {
   display: inline-flex;
   align-items: center;
@@ -244,5 +220,5 @@
   text-shadow: 1px 1px 0 #3f3f3f;
 }
 .mc-checkbox-row .mc-checkbox {
-  pointer-events: none;   /* 点击整行即可，避免双击触发两次 */
+  pointer-events: none;
 }

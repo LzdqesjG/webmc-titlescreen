@@ -19,7 +19,6 @@
   var newsEl   = document.getElementById('realms-news');
   var inviteEl = document.getElementById('realms-invite');
   var trialEl  = document.getElementById('realms-trial');
-
   /* ============ 按 cookie 决定显隐 ============ */
   var showNews    = getCookie('realms_news') === '1';
   var inviteState = getCookie('realms_invite');    /* '' | '0' | '1' */

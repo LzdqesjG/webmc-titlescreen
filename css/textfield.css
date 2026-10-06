@@ -1,44 +1,49 @@
 /* ============ MC 文本框 ============ */
 .mc-input {
-  /* 尺寸：MC 默认 200×20，宽度可按需改 */
   width: 200px;
   height: 20px;
 
-  /* 去掉浏览器默认外观 */
   border: none;
   outline: none;
   -webkit-appearance: none;
   appearance: none;
 
-  /* 内边距：文字离左右各 4 像素 */
-  padding: 0 4px;
+  padding: 0 4px;               /* 源码 bordered → 4px */
   box-sizing: border-box;
 
-  /* 背景图，拉满 */
   background: url('../assets/text_field/text_field.png') no-repeat center / 100% 100%;
   image-rendering: pixelated;
 
-  /* 字体 */
   font-family: 'Minecraft', monospace;
-  color: #e0e0e0;
+  color: #E0E0E0;               /* -2039584 = #E0E0E0 */
+  caret-color: #E0E0E0;
 
-  /* 光标颜色（用 text-shadow 反推光标颜色也行） */
-  caret-color: #e0e0e0;
-
-  /* 允许选中文字（覆盖全局 user-select: none） */
   user-select: text;
   -webkit-user-select: text;
 }
 
-/* 聚焦状态 → 换成 highlighted 图 */
-.mc-input:focus {
+/* 聚焦态 + 可编辑 → 高亮底图（源码 SPRITES.get(active, focused)） */
+.mc-input:focus:not(:disabled):not([readonly]) {
   background-image: url('../assets/text_field/text_field_highlighted.png');
 }
 
-/* 占位符颜色 */
+/* 不可编辑文字色 */
+.mc-input:disabled,
+.mc-input[readonly] {
+  color: #707070;               /* -9408400 = #707070 */
+  caret-color: transparent;
+}
+
+/* 占位符：源码 DEFAULT_HINT_STYLE = DARK_GRAY */
 .mc-input::placeholder {
-  color: #707070;
-  opacity: 1;   /* Firefox 默认半透明，取消 */
+  color: #555555;
+  opacity: 1;
+}
+
+/* 搜索框占位符：源码 SEARCH_HINT_STYLE = GRAY + ITALIC */
+.mc-input.search-hint::placeholder {
+  color: #AAAAAA;
+  font-style: italic;
 }
 
 /* 数字框去掉右侧上下箭头 */

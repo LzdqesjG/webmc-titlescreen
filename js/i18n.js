@@ -3,23 +3,69 @@
 
   var STORAGE_KEY = 'mc_lang';
   var DEFAULT_LANG = 'en_us';
-  var SUPPORTED = ['en_us', 'zh_cn'];
 
-  /* "zh-CN" / "en-US" → "zh_cn" / "en_us" */
+  /* ==========================================================
+     支持的语言代码列表
+     —— 由 extract_langs.py 自动生成（或手动粘贴其输出）
+     ========================================================== */
+  var SUPPORTED = [
+    'af_za', 'ar_sa', 'ast_es', 'az_az',
+    'ba_ru', 'be_by', 'bg_bg', 'br_fr',
+    'bs_ba', 'ca_es', 'cs_cz', 'cv_cu',
+    'cy_gb', 'da_dk', 'de_at', 'de_ch',
+    'de_de', 'el_gr', 'en_au', 'en_ca',
+    'en_gb', 'en_nz', 'en_pt', 'en_ud',
+    'en_us', 'eo_uy', 'es_ar', 'es_cl',
+    'es_ec', 'es_es', 'es_mx', 'es_uy',
+    'es_ve', 'et_ee', 'eu_es', 'fa_ir',
+    'fi_fi', 'fil_ph', 'fo_fo', 'fr_ca',
+    'fr_ch', 'fr_fr', 'fra_de', 'fur_it',
+    'fy_nl', 'ga_ie', 'gd_gb', 'gl_es',
+    'go_fr', 'got_de', 'hal_ua', 'haw_us',
+    'he_il', 'hi_in', 'hn_no', 'hr_hr',
+    'hu_hu', 'hy_am', 'id_id', 'ig_ng',
+    'io_en', 'is_is', 'it_it', 'ja_jp',
+    'jbo_en', 'ka_ge', 'kk_kz', 'kn_in',
+    'ko_kr', 'kw_gb', 'ky_kg', 'la_la',
+    'lb_lu', 'li_li', 'lo_la', 'lol_us',
+    'lt_lt', 'lv_lv', 'mk_mk', 'mn_mn',
+    'ms_my', 'mt_mt', 'nds_de', 'nl_be',
+    'nl_nl', 'nn_no', 'no_no', 'oc_fr',
+    'pl_pl', 'pt_br', 'pt_pt', 'qcb_es',
+    'qya_aa', 'ro_ro', 'ru_ru', 'ry_ua',
+    'sah_sah', 'se_no', 'sk_sk', 'sl_si',
+    'so_so', 'sq_al', 'sr_cs', 'sr_sp',
+    'sv_se', 'ta_in', 'th_th', 'tl_ph',
+    'tlh_aa', 'tr_tr', 'tt_ru', 'tzo_mx',
+    'uk_ua', 'uz_uz', 'val_es', 'vec_it',
+    'vi_vn', 'vp_vl', 'yi_de', 'yo_ng',
+    'zh_cn', 'zh_hk', 'zh_tw'
+];
+
+  var currentLang = DEFAULT_LANG;
+  var dict = {};
+  var langIndex = null;         /* 由 index.json 提供 */
+  var ready = false;
+  var pending = [];
+
+  /* ==========================================================
+     语言代码归一化
+     ========================================================== */
   function normalizeLang(code) {
     if (!code) return DEFAULT_LANG;
-    return code.toLowerCase().replace(/-/g, '_').split('_').slice(0, 2).join('_');
+    return String(code).toLowerCase().replace(/-/g, '_').split('_').slice(0, 2).join('_');
   }
 
   function getSavedLang() {
     try { return localStorage.getItem(STORAGE_KEY); } catch (e) { return null; }
   }
-
   function saveLang(code) {
     try { localStorage.setItem(STORAGE_KEY, code); } catch (e) {}
   }
 
-  /* 检测默认语言：cookie → UA → fallback */
+  /* ==========================================================
+     默认语言检测
+     ========================================================== */
   function detectDefault() {
     var saved = getSavedLang();
     if (saved && SUPPORTED.indexOf(saved) >= 0) return saved;
@@ -28,16 +74,14 @@
     var norm = normalizeLang(ua);
 
     if (SUPPORTED.indexOf(norm) >= 0) return norm;
-    if (norm.indexOf('zh') === 0) return 'zh_cn';
-    if (norm.indexOf('en') === 0) return 'en_us';
+    if (norm.indexOf('zh') === 0 && SUPPORTED.indexOf('zh_cn') >= 0) return 'zh_cn';
+    if (norm.indexOf('en') === 0 && SUPPORTED.indexOf('en_us') >= 0) return 'en_us';
     return DEFAULT_LANG;
   }
 
-  var currentLang = detectDefault();
-  var dict = {};
-  var ready = false;
-  var pending = [];
-
+  /* ==========================================================
+     应用翻译到 DOM
+     ========================================================== */
   function applyTranslations() {
     var nodes = document.querySelectorAll('[data-i18n]');
     for (var i = 0; i < nodes.length; i++) {
@@ -51,50 +95,97 @@
     }
     document.documentElement.setAttribute('lang', currentLang.replace('_', '-'));
     try {
-      document.dispatchEvent(new CustomEvent('i18n-ready', { detail: { lang: currentLang } }));
+      document.dispatchEvent(new CustomEvent('i18n-ready', {
+        detail: { lang: currentLang }
+      }));
     } catch (e) {}
   }
 
-  function load(lang) {
-    return fetch('assets/lang/' + lang + '.json')
-      .then(function(r) {
-        if (!r.ok) throw new Error('not found: ' + lang);
-        return r.json();
-      })
-      .then(function(json) { dict = json; });
+  /* ==========================================================
+     加载
+     ========================================================== */
+  function fetchLang(code) {
+    return fetch('assets/lang/' + code + '.json').then(function(r) {
+      if (!r.ok) throw new Error('not found: ' + code);
+      return r.json();
+    });
   }
 
-  function init() {
-    load(currentLang)
-      .catch(function() {
-        currentLang = DEFAULT_LANG;
-        return load(DEFAULT_LANG).catch(function() { dict = {}; });
+  function load(code) {
+    return fetchLang(code).then(function(json) { dict = json; });
+  }
+
+  function loadIndex() {
+    return fetch('assets/lang/index.json')
+      .then(function(r) {
+        if (!r.ok) throw new Error('index missing');
+        return r.json();
       })
-      .then(function() {
-        ready = true;
-        applyTranslations();
-        pending.forEach(function(fn) { fn(); });
-        pending = [];
+      .then(function(json) { langIndex = json; })
+      .catch(function() {
+        /* 兜底：index.json 没加载成功时，用 SUPPORTED 硬拼 */
+        langIndex = {};
+        for (var i = 0; i < SUPPORTED.length; i++) {
+          langIndex[SUPPORTED[i]] = { name: SUPPORTED[i], region: '' };
+        }
       });
   }
 
+  /* ==========================================================
+     启动
+     ========================================================== */
+  function init() {
+    loadIndex().then(function() {
+      currentLang = detectDefault();
+      load(currentLang)
+        .catch(function() {
+          currentLang = DEFAULT_LANG;
+          return load(DEFAULT_LANG).catch(function() { dict = {}; });
+        })
+        .then(function() {
+          ready = true;
+          applyTranslations();
+          pending.forEach(function(fn) { fn(); });
+          pending = [];
+        });
+    });
+  }
+
+  /* ==========================================================
+     对外接口
+     ========================================================== */
   window.i18n = {
     t: function(key) {
       return dict[key] != null ? dict[key] : key;
     },
+
     getLang: function() { return currentLang; },
     setLang: function(code) {
       currentLang = code;
       saveLang(code);
       return load(code).then(function() { applyTranslations(); });
     },
+
     ready: function(fn) {
       if (ready) fn();
       else pending.push(fn);
     },
+
+    /* 语言列表（同步，index.json 加载完后可用）
+       返回 { code: { name, region } } */
+    getLanguages: function() {
+      return langIndex || {};
+    },
+    getLanguageCodes: function() {
+      return langIndex ? Object.keys(langIndex).sort() : [];
+    },
+    getLanguage: function(code) {
+      return langIndex ? langIndex[code] : null;
+    },
+
+    getSupportedCodes: function() { return SUPPORTED.slice(); },
     detectDefault: detectDefault,
-    normalizeLang: normalizeLang,
-    SUPPORTED: SUPPORTED
+    normalizeLang: normalizeLang
   };
 
   init();

@@ -1,6 +1,3 @@
-/* ==========================================================
-   Slider（拖动改变值）
-   ========================================================== */
 (function() {
   'use strict';
 
@@ -15,9 +12,7 @@
 
     var dragging = false;
 
-    function clamp(v) {
-      return Math.max(min, Math.min(max, v));
-    }
+    function clamp(v) { return Math.max(min, Math.min(max, v)); }
 
     function snap(v) {
       if (step > 0) {
@@ -73,6 +68,14 @@
       if (!dragging) return;
       dragging = false;
       el.classList.remove('dragging');
+
+      /* 源码 onRelease 播一次音效 */
+      var sfx = document.getElementById('sfx-click');
+      if (sfx) {
+        var a = sfx.cloneNode();
+        a.volume = 0.7;
+        a.play().catch(function(){});
+      }
     });
 
     /* --- 触摸 --- */
@@ -92,12 +95,21 @@
       if (!dragging) return;
       dragging = false;
       el.classList.remove('dragging');
+
+      /* 源码 onRelease 播一次音效 */
+      var sfx = document.getElementById('sfx-click');
+      if (sfx) {
+        var a = sfx.cloneNode();
+        a.volume = 0.7;
+        a.play().catch(function(){});
+      }
     });
 
-    /* --- 尺寸变化时重算手柄位置 --- */
     window.addEventListener('resize', updateHandlePosition);
 
-    /* --- 初始 --- */
+    /* 让 slider 可聚焦（:focus 高亮轨道） */
+    if (!el.hasAttribute('tabindex')) el.tabIndex = 0;
+
     updateHandlePosition();
 
     return {
@@ -107,7 +119,6 @@
     };
   }
 
-  /* 自动初始化页面已有的 .mc-slider */
   function initAllSliders() {
     var list = document.querySelectorAll('.mc-slider:not(.inited)');
     for (var i = 0; i < list.length; i++) {
@@ -122,7 +133,6 @@
     initAllSliders();
   }
 
-  /* 暴露接口 */
   window.mcWidgets = window.mcWidgets || {};
   window.mcWidgets.initSlider = initSlider;
   window.mcWidgets.initAllSliders = initAllSliders;

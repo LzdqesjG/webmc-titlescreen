@@ -31,7 +31,6 @@
 <link rel="stylesheet" href="css/buttons.css">
 <link rel="stylesheet" href="css/realm.css">
 <link rel="stylesheet" href="css/logos.css">
-<link rel="stylesheet" href="css/index.css">
 <script src="js/exit.js"></script>
 </head>
 <body>
@@ -50,22 +49,22 @@
   </div>
 
   <div class="menu">
-    <a class="mcbtn mcbtn-long" id="sstart" href="sstart.html" data-i18n="menu.singleplayer">Singleplayer</a>
-    <a class="mcbtn mcbtn-long" id="mstart" href="mstart.html" data-i18n="menu.multiplayer">Multiplayer</a>
+    <a href="sstart.html" class="mcbtn mcbtn-long" id="sstart" data-i18n="menu.singleplayer">Singleplayer</a>
+    <button class="mcbtn mcbtn-long" id="mstart" data-i18n="menu.multiplayer">Multiplayer</button>
 
-    <a class="mcbtn mcbtn-long" id="realms" href="realms_online.html">
+    <button class="mcbtn mcbtn-long" id="realms" disabled>
       <span data-i18n="menu.online">Minecraft Realms</span>
       <span class="realms-notifications" aria-hidden="true">
         <img class="realms-notif" id="realms-news"   src="assets/icon/news_notification_mainscreen.png" alt="">
         <img class="realms-notif" id="realms-invite" src="assets/icon/realms_invite_on.png" alt="">
         <img class="realms-notif" id="realms-trial"  src="assets/icon/realms_trial_on.png" alt="">
       </span>
-    </a>
+    </button>
 
     <div class="icon-row">
       <button class="mcbtn mcbtn-icon" disabled title="Friends"><img src="assets/icon/friends.png" alt="Friends"></button>
       <a class="mcbtn mcbtn-icon" id="lang" href="lang.html" title="Language"><img src="assets/icon/language.png" alt="Language"></a>
-      <a class="mcbtn mcbtn-icon" id="accessibility" href="https://github.com/LzdqesjG/webmc-titlescreen" target="_blank" rel="noopener noreferrer" title="Accessibility"><img src="assets/icon/accessibility.png" alt="Accessibility"></a>
+      <button class="mcbtn mcbtn-icon" id="accessibility" title="Accessibility"><img src="assets/icon/accessibility.png" alt="Accessibility"></button>
     </div>
 
     <div class="bottom-row">
