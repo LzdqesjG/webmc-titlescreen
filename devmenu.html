@@ -194,7 +194,7 @@
 <div class="world-screen">
 
   <div class="world-header">
-    <div class="world-title" data-i18n="devmenu.title">Developer Menu</div>
+    <div class="world-title">Developer Menu</div>
     <div class="world-subtitle">存在bug并不被动修复</div>
   </div>
 
@@ -203,7 +203,7 @@
   </div>
 
   <div class="world-footer">
-    <a class="mcbtn mcbtn-150" id="btn-back" href="mstart.html" data-i18n="devmenu.backToList">Back</a>
+    <a class="mcbtn mcbtn-150" id="btn-back" href="mstart.html" data-i18n="gui.back">Back</a>
   </div>
 
 </div>
@@ -259,7 +259,7 @@
     var step = currentScaleStep();
     var css = getComputedStyle(document.documentElement)
       .getPropertyValue('--ui-scale').trim() || '1';
-    var state = (step === 'auto') ? t('devmenu.state.auto') : t('devmenu.state.on');
+    var state = (step === 'auto') ? 'auto' : 'on';
     return state + ' · ' + css + '×';
   }
 
@@ -308,24 +308,34 @@
      菜单定义
      ========================================================== */
   var ITEMS = [
-    { group: 'devmenu.group.ui' },
-    { cmd: 'devmenu.open.title', desc: 'index.html',  href: 'index.html' },
-    { cmd: 'devmenu.open.world', desc: 'sstart.html', href: 'sstart.html' },
-    { cmd: 'devmenu.open.multi',  desc: 'mstart.html',  href: 'mstart.html' },
-    { cmd: 'devmenu.open.realms.online',  desc: 'realms_online.html',  href: 'realms_online.html' },
-    { cmd: 'devmenu.open.realms.offline', desc: 'realms_offline.html', href: 'realms_offline.html' },
-    { cmd: 'devmenu.open.realms.update',  desc: 'realms_update.html',  href: 'realms_update.html' },
-    { cmd: 'devmenu.open.lang',   desc: 'lang.html',    href: 'lang.html' },
+    { group: 'Screens' },
+    { cmd: 'Main Menu',       desc: 'index.html',         href: 'index.html' },
+    { cmd: 'Singleplayer',    desc: 'sstart.html',        href: 'sstart.html' },
+    { cmd: 'Multiplayer',     desc: 'mstart.html',        href: 'mstart.html' },
+    { cmd: 'Realms (online)', desc: 'realms_online.html', href: 'realms_online.html' },
+    { cmd: 'Realms (offline)',desc: 'realms_offline.html',href: 'realms_offline.html' },
+    { cmd: 'Realms (update)', desc: 'realms_update.html', href: 'realms_update.html' },
+    { cmd: 'Options',         desc: 'options.html',       href: 'options.html' },
+    { cmd: 'Language',        desc: 'lang.html',          href: 'lang.html' },
+    { cmd: 'Accessibility',   desc: 'accessibility.html', href: 'accessibility.html' },
+    { cmd: 'Skin',            desc: 'skin.html',          href: 'skin.html' },
+    { cmd: 'Sound',           desc: 'sound.html',         href: 'sound.html' },
+    { cmd: 'Video',           desc: 'video.html',         href: 'video.html' },
+    { cmd: 'Chat',            desc: 'chat.html',          href: 'chat.html' },
+    { cmd: 'Font',            desc: 'font.html',          href: 'font.html' },
+    { cmd: 'Online',          desc: 'online.html',        href: 'online.html' },
+    { cmd: 'Telemetry',       desc: 'telemetry.html',     href: 'telemetry.html' },
+    { cmd: 'Credits',         desc: 'credits.html',       href: 'credits.html' },
 
-    { group: 'devmenu.group.test' },
-    { cmd: 'devmenu.scale',  descFn: scaleDesc, action: cycleScale },
-    { cmd: 'devmenu.lang',   descFn: function() {
+    { group: 'Tests' },
+    { cmd: 'UI scale',  descFn: scaleDesc, action: cycleScale },
+    { cmd: 'Language',  descFn: function() {
         return (window.i18n && window.i18n.getLang) ? window.i18n.getLang() : '?';
       }, action: showLang },
-    { cmd: 'devmenu.diag',   desc: 'alert()', action: showDiag },
-    { cmd: 'devmenu.clear',  desc: 'localStorage.clear()', danger: true, action: clearStorage },
-    { cmd: 'devmenu.reload', desc: 'location.reload()', action: function() { location.reload(); } },
-    { cmd: 'devmenu.crash',  desc: 'exit()', danger: true, action: crashTest }
+    { cmd: 'Diagnostics',   desc: 'alert()', action: showDiag },
+    { cmd: 'Clear storage', desc: 'localStorage.clear()', danger: true, action: clearStorage },
+    { cmd: 'Reload',        desc: 'location.reload()', action: function() { location.reload(); } },
+    { cmd: 'Quit test',     desc: 'exit()', danger: true, action: crashTest }
   ];
 
   /* ==========================================================
